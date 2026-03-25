@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KlaseCo — Mission Control</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #FFD700; --gold-light: #FFF3CD;
+    --green: #4CAF50; --green-light: #D4EDDA;
+    --yellow: #E8A317; --yellow-light: #FFF3CD;
+    --blue: #3B82F6; --blue-light: #DBEAFE;
+    --purple: #8B5CF6; --purple-light: #EDE9FE;
+    --gray: #6B7280; --gray-light: #F3F4F6;
+    --red: #EF4444;
+    --crimson: #DC2626;
+    --bg: #FAFBFC;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    font-family: var(--font); background: var(--bg);
+    touch-action: none; -webkit-overflow-scrolling: touch;
+  }
+
+  /* Top bar */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: white; border-bottom: 1px solid #E5E7EB;
+    padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+  }
+  #topbar h1 { font-size: 18px; font-weight: 700; color: #111; white-space: nowrap; }
+  #topbar .subtitle { font-size: 13px; color: #6B7280; white-space: nowrap; }
+  .toolbar { display: flex; gap: 6px; }
+  .toolbar button {
+    background: white; border: 1px solid #D1D5DB; border-radius: 6px;
+    padding: 6px 12px; font-size: 13px; cursor: pointer; color: #374151;
+    transition: all 0.15s; min-height: 44px; min-width: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .toolbar button:hover { background: #F3F4F6; border-color: #9CA3AF; }
+  .toolbar button.active { background: #EEF2FF; border-color: var(--blue); color: var(--blue); }
+
+  /* Canvas */
+  #canvas { width: 100%; height: 100%; padding-top: 52px; touch-action: none; }
+  svg { width: 100%; height: 100%; touch-action: none; }
+
+  /* Nodes */
+  .node { cursor: grab; }
+  .node:active { cursor: grabbing; }
+  .node-card {
+    fill: white; stroke: #E5E7EB; stroke-width: 1; rx: 10; ry: 10;
+    filter: url(#shadow);
+    transition: filter 0.2s;
+  }
+  .node:hover .node-card, .node.tapped .node-card { filter: url(#shadow-hover); }
+  .node-header { rx: 10; ry: 10; }
+  .node-title { font-size: 13px; font-weight: 600; fill: white; }
+  .node-subtitle { font-size: 11px; fill: #6B7280; }
+  .node-badge { font-size: 10px; font-weight: 600; rx: 8; ry: 8; }
+  .node-badge-text { font-size: 9px; font-weight: 600; fill: white; }
+  .node-emoji { font-size: 20px; }
+  .node-desc { font-size: 10.5px; fill: #6B7280; }
+
+  /* Links */
+  .link { fill: none; stroke-width: 2; opacity: 0.6; }
+  .link:hover { opacity: 1; stroke-width: 3; }
+  .link-command { stroke-width: 3; opacity: 0.85; }
+  .link-system { stroke-dasharray: 6 3; opacity: 0.35; }
+  .link-legal { stroke-dasharray: 8 4; }
+
+  /* Cluster backgrounds */
+  .cluster-bg {
+    fill: #F8FAFC; stroke: #E2E8F0; stroke-width: 1; rx: 14; ry: 14;
+    stroke-dasharray: 4 2; opacity: 0.7;
+  }
+  .cluster-label {
+    font-size: 10px; fill: #94A3B8; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Link labels */
+  .link-label {
+    font-size: 9px; fill: #9CA3AF; font-weight: 500;
+    pointer-events: none;
+  }
+
+  /* Legend */
+  #legend {
+    position: fixed; bottom: 16px; left: 16px; z-index: 90;
+    background: white; border: 1px solid #E5E7EB; border-radius: 10px;
+    padding: 14px 18px; box-shadow: var(--card-shadow);
+    font-size: 12px; color: #374151;
+    max-height: calc(100vh - 100px); overflow-y: auto;
+    transition: max-height 0.3s ease;
+  }
+  #legend h3 { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #111; display: flex; align-items: center; justify-content: space-between; }
+  #legend .legend-toggle {
+    display: none; background: none; border: none; font-size: 16px;
+    cursor: pointer; color: #6B7280; min-width: 44px; min-height: 44px;
+    align-items: center; justify-content: center;
+  }
+  .legend-section { margin-bottom: 8px; }
+  .legend-section:last-child { margin-bottom: 0; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .legend-color { width: 20px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-dash { width: 20px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
+  #legend-body { transition: max-height 0.3s ease, opacity 0.2s ease; overflow: hidden; }
+  #legend.collapsed #legend-body { max-height: 0; opacity: 0; }
+
+  /* Detail panel — desktop */
+  #detail-panel {
+    position: fixed; top: 52px; right: 0; width: 320px; height: calc(100% - 52px);
+    background: white; border-left: 1px solid #E5E7EB;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.06);
+    z-index: 90; transform: translateX(100%);
+    transition: transform 0.25s ease; overflow-y: auto; padding: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  #detail-panel.open { transform: translateX(0); }
+  #detail-panel .close-btn {
+    position: absolute; top: 12px; right: 12px;
+    background: none; border: none; font-size: 18px; cursor: pointer; color: #9CA3AF;
+    min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+  }
+  #detail-panel .dp-drag-handle {
+    display: none; width: 40px; height: 4px; background: #D1D5DB;
+    border-radius: 2px; margin: 0 auto 12px;
+  }
+  #detail-panel h2 { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  #detail-panel .detail-role { font-size: 12px; color: #6B7280; margin-bottom: 12px; }
+  #detail-panel .detail-section { margin-bottom: 14px; }
+  #detail-panel .detail-section h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #9CA3AF; margin-bottom: 6px; }
+  #detail-panel .detail-section p, #detail-panel .detail-section li { font-size: 13px; color: #374151; line-height: 1.5; }
+  #detail-panel ul { padding-left: 16px; }
+  #detail-panel .status-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    font-size: 11px; font-weight: 600;
+  }
+
+  /* Tooltip */
+  #tooltip {
+    position: fixed; z-index: 200; pointer-events: none;
+    background: #1F2937; color: white; padding: 6px 10px;
+    border-radius: 6px; font-size: 12px; max-width: 240px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity 0.15s;
+  }
+  #tooltip.visible { opacity: 1; }
+
+  /* Layer toggles */
+  .layer-toggles { display: flex; gap: 4px; flex-wrap: wrap; }
+  .layer-toggle {
+    background: white; border: 1px solid #D1D5DB; border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; cursor: pointer; color: #374151;
+    transition: all 0.15s; min-height: 44px; min-width: 44px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .layer-toggle.active { background: #EEF2FF; border-color: var(--blue); color: var(--blue); }
+
+  /* Workflow section */
+  #workflow-panel {
+    position: fixed; bottom: 16px; right: 16px; z-index: 90;
+    background: white; border: 1px solid #E5E7EB; border-radius: 10px;
+    padding: 14px 18px; box-shadow: var(--card-shadow);
+    font-size: 12px; color: #374151; max-width: 280px;
+    max-height: calc(100vh - 100px); overflow-y: auto;
+    transition: max-height 0.3s ease;
+  }
+  #workflow-panel h3 { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #111; display: flex; align-items: center; justify-content: space-between; }
+  #workflow-panel .wf-toggle {
+    display: none; background: none; border: none; font-size: 16px;
+    cursor: pointer; color: #6B7280; min-width: 44px; min-height: 44px;
+    align-items: center; justify-content: center;
+  }
+  .workflow-item {
+    display: flex; align-items: flex-start; gap: 8px; margin: 6px 0;
+    cursor: pointer; padding: 4px 6px; border-radius: 6px;
+    min-height: 44px;
+  }
+  .workflow-item:hover, .workflow-item:active { background: #F9FAFB; }
+  .workflow-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+  .workflow-name { font-size: 11px; font-weight: 600; color: #374151; }
+  .workflow-desc { font-size: 10px; color: #9CA3AF; }
+  #workflow-body { transition: max-height 0.3s ease, opacity 0.2s ease; overflow: hidden; }
+  #workflow-panel.collapsed #workflow-body { max-height: 0; opacity: 0; }
+
+  /* ── MOBILE STYLES ── */
+  @media (max-width: 767px) {
+    #topbar {
+      padding: 8px 10px; gap: 8px;
+      flex-wrap: wrap;
+    }
+    #topbar h1 { font-size: 14px; }
+    #topbar .subtitle { display: none; }
+
+    .layer-toggles {
+      order: 10; width: 100%;
+      gap: 4px; flex-wrap: wrap;
+      padding-top: 4px;
+    }
+    .layer-toggle {
+      flex: 1 1 auto; min-width: 0;
+      padding: 4px 6px; font-size: 10px;
+      min-height: 36px;
+    }
+
+    .toolbar {
+      margin-left: auto;
+    }
+    .toolbar button {
+      padding: 4px 8px; font-size: 12px;
+      min-height: 36px; min-width: 36px;
+    }
+
+    #canvas { padding-top: 90px; } /* taller topbar with wrapped buttons */
+
+    /* Legend: collapsible on mobile */
+    #legend {
+      bottom: 10px; left: 10px;
+      padding: 10px 14px;
+      font-size: 11px;
+      max-width: calc(50vw - 16px);
+    }
+    #legend .legend-toggle { display: flex; }
+    #legend.collapsed { padding-bottom: 10px; }
+
+    /* Workflow: stack vertically, collapsible */
+    #workflow-panel {
+      bottom: 10px; right: 10px;
+      padding: 10px 14px;
+      font-size: 11px;
+      max-width: calc(50vw - 16px);
+    }
+    #workflow-panel .wf-toggle { display: flex; }
+    #workflow-panel.collapsed { padding-bottom: 10px; }
+    .workflow-item {
+      flex-direction: column; gap: 2px;
+      padding: 6px;
+    }
+
+    /* Detail panel: bottom sheet */
+    #detail-panel {
+      position: fixed;
+      top: auto; right: 0; bottom: 0; left: 0;
+      width: 100%; height: auto; max-height: 60vh;
+      border-left: none; border-top: 1px solid #E5E7EB;
+      border-radius: 16px 16px 0 0;
+      transform: translateY(100%);
+      padding: 12px 20px 24px;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+    }
+    #detail-panel.open { transform: translateY(0); }
+    #detail-panel .dp-drag-handle { display: block; }
+    #detail-panel .close-btn { top: 8px; right: 8px; }
+
+    /* Tooltip */
+    #tooltip {
+      max-width: calc(100vw - 32px);
+    }
+  }
+
+  /* Very small screens */
+  @media (max-width: 375px) {
+    #topbar h1 { font-size: 12px; }
+    .layer-toggle { font-size: 9px; padding: 3px 4px; }
+    #legend { font-size: 10px; max-width: calc(45vw - 12px); }
+    #workflow-panel { font-size: 10px; max-width: calc(45vw - 12px); }
+    #detail-panel { max-height: 55vh; }
+    #canvas { padding-top: 85px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>🏢 KlaseCo Mission Control</h1>
+  <span class="subtitle">Operational Architecture</span>
+  <div class="layer-toggles">
+    <button class="layer-toggle active" data-layer="leadership" onclick="toggleLayer(this)">👑 Leadership</button>
+    <button class="layer-toggle active" data-layer="projects" onclick="toggleLayer(this)">📦 Projects</button>
+    <button class="layer-toggle active" data-layer="agents" onclick="toggleLayer(this)">🤖 Agents</button>
+    <button class="layer-toggle active" data-layer="systems" onclick="toggleLayer(this)">⚙️ Systems</button>
+  </div>
+  <div class="toolbar">
+    <button onclick="resetView()" title="Reset zoom">⟲</button>
+    <button onclick="zoomIn()" title="Zoom in">＋</button>
+    <button onclick="zoomOut()" title="Zoom out">－</button>
+  </div>
+</div>
+
+<div id="canvas"></div>
+
+<div id="legend">
+  <h3>Legend <button class="legend-toggle" onclick="toggleLegend()">▼</button></h3>
+  <div id="legend-body">
+    <div class="legend-section">
+      <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Leadership</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#FFD700"></div> Alex (CEO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4CAF50"></div> Kiwi (COO)</div>
+    </div>
+    <div class="legend-section" style="border-top:1px solid #E5E7EB; padding-top:6px;">
+      <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">C-Suite Agents</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div> Bolt (CTO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#F59E0B"></div> Spark (CSO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#EC4899"></div> Echo (CMO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#06B6D4"></div> Lens (CRO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#DC2626"></div> Counsel (CLO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div> Relay (CIO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div> Ledger (CFO)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6366F1"></div> Shield (CISO)</div>
+    </div>
+    <div class="legend-section" style="border-top:1px solid #E5E7EB; padding-top:6px;">
+      <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Connections</div>
+      <div class="legend-item"><div class="legend-color" style="background:#FFD700"></div> Command (Alex → Kiwi)</div>
+      <div class="legend-item"><div class="legend-color" style="background:#4CAF50"></div> Delegation (Kiwi → Agents)</div>
+      <div class="legend-item"><div class="legend-color" style="background:#3B82F6;height:2px;"></div> Agent → Project (agent's color)</div>
+      <div class="legend-item"><div class="legend-dash" style="border-color:var(--gray)"></div> System Link</div>
+    </div>
+  </div>
+</div>
+
+<div id="workflow-panel">
+  <h3>⚡ Workflows <button class="wf-toggle" onclick="toggleWorkflows()">▼</button></h3>
+  <div id="workflow-body">
+    <div class="workflow-item" onclick="highlightWorkflow('planning')">
+      <div class="workflow-dot" style="background:var(--gold)"></div>
+      <div><div class="workflow-name">Planning Pipeline</div><div class="workflow-desc">Alex → Kiwi → Spark → PRD → Execute</div></div>
+    </div>
+    <div class="workflow-item" onclick="highlightWorkflow('content')">
+      <div class="workflow-dot" style="background:var(--purple)"></div>
+      <div><div class="workflow-name">Content Pipeline</div><div class="workflow-desc">Lens → Echo → Aperture → Distribution</div></div>
+    </div>
+    <div class="workflow-item" onclick="highlightWorkflow('approval')">
+      <div class="workflow-dot" style="background:var(--green)"></div>
+      <div><div class="workflow-name">Approval Flow</div><div class="workflow-desc">Draft → Kiwi → Alex → Execute</div></div>
+    </div>
+    <div class="workflow-item" onclick="highlightWorkflow('memory')">
+      <div class="workflow-dot" style="background:var(--blue)"></div>
+      <div><div class="workflow-name">Memory Cycle</div><div class="workflow-desc">Notes → Consolidate → Update → Backup</div></div>
+    </div>
+    <div class="workflow-item" onclick="highlightWorkflow('devops')">
+      <div class="workflow-dot" style="background:var(--gray)"></div>
+      <div><div class="workflow-name">DevOps Flow</div><div class="workflow-desc">Code → Relay → Deploy → Monitor</div></div>
+    </div>
+    <div class="workflow-item" onclick="highlightWorkflow('legal')">
+      <div class="workflow-dot" style="background:var(--crimson)"></div>
+      <div><div class="workflow-name">Legal Review</div><div class="workflow-desc">Kiwi → Counsel → All Projects</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="detail-panel">
+  <div class="dp-drag-handle"></div>
+  <button class="close-btn" onclick="closeDetail()">✕</button>
+  <div id="detail-content"></div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ── Detect mobile ───────────────────────────────────────────────────────────
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+// Auto-collapse legend and workflows on mobile
+if (isMobile) {
+  document.getElementById('legend').classList.add('collapsed');
+  document.getElementById('workflow-panel').classList.add('collapsed');
+}
+
+// Toggle functions
+function toggleLegend() {
+  const el = document.getElementById('legend');
+  el.classList.toggle('collapsed');
+  el.querySelector('.legend-toggle').textContent = el.classList.contains('collapsed') ? '▶' : '▼';
+}
+function toggleWorkflows() {
+  const el = document.getElementById('workflow-panel');
+  el.classList.toggle('collapsed');
+  el.querySelector('.wf-toggle').textContent = el.classList.contains('collapsed') ? '▶' : '▼';
+}
+
+// ── Layout Constants ────────────────────────────────────────────────────────
+const COL_SPACING = 210;
+const COL_START = 140;
+// NEW LAYOUT ORDER (top to bottom): Systems → Leadership → C-Suite Agents → Projects
+const SYS_Y = 80;
+const LEADERSHIP_Y_TOP = 230;
+const LEADERSHIP_Y_BOT = 340;
+const CSUITE_Y_TOP = 270;
+const CSUITE_Y_BOT = 340;
+const PROJ_Y = 500;
+const AGENT_Y = 630;
+
+function colX(i) { return COL_START + i * COL_SPACING; }
+
+// ── Data ────────────────────────────────────────────────────────────────────
+
+const nodes = [
+  // --- Systems (TOP ROW) ---
+  { id: 'memory', label: 'Memory System', role: 'MEMORY.md + Daily Notes', emoji: '🧠', layer: 'systems', color: '#6B7280',
+    x: colX(0.5), y: SYS_Y,
+    detail: { description: 'Persistent memory system. MEMORY.md for long-term, daily notes for raw logs.', components: ['MEMORY.md', 'memory/*.md', '2am cron', '3am cron'] }},
+  { id: 'comms', label: 'Communication', role: 'Telegram, Discord', emoji: '💬', layer: 'systems', color: '#6B7280',
+    x: colX(1.5), y: SYS_Y,
+    detail: { description: 'Communication channels. Telegram is the trusted primary channel.', components: ['Telegram (primary, trusted)', 'Discord (Klase HQ)'] }},
+  { id: 'infra', label: 'Infrastructure', role: 'Mac mini, OpenClaw, Vercel', emoji: '🖥️', layer: 'systems', color: '#6B7280',
+    x: colX(2.5), y: SYS_Y,
+    detail: { description: 'Core infrastructure. Mac mini as host, OpenClaw as gateway.', components: ['Mac mini (host)', 'OpenClaw (gateway)', 'Vercel (hosting)', 'GitHub (repos)'] }},
+  { id: 'tools', label: 'Tools', role: 'Airtable, ElevenLabs, GitHub', emoji: '🔧', layer: 'systems', color: '#6B7280',
+    x: colX(3.5), y: SYS_Y,
+    detail: { description: 'External tools and services integrated into workflows.', components: ['Airtable', 'ElevenLabs', 'GitHub', 'Stripe (future)'] }},
+  { id: 'distribution', label: 'Distribution', role: 'YouTube, TikTok, X, etc.', emoji: '📡', layer: 'systems', color: '#6B7280',
+    x: colX(4.5), y: SYS_Y,
+    detail: { description: 'Content distribution channels.', components: ['YouTube', 'TikTok', 'Instagram', 'X (Twitter)', 'Reddit'] }},
+
+  // --- Leadership (SECOND ROW) ---
+  { id: 'alex', label: 'Alex', role: 'Founder & CEO', emoji: '👑', layer: 'leadership', color: '#FFD700',
+    x: colX(2.5), y: LEADERSHIP_Y_TOP,
+    detail: { description: 'Founder & CEO of KlaseCo. Strategic vision, final approvals, capital allocation.', connections: ['Kiwi Klase (Chief of Staff / COO)'], channel: 'Telegram (primary)', status: 'Active' }},
+  { id: 'kiwi', label: 'Kiwi Klase', role: 'Chief of Staff / COO', emoji: '🥝', layer: 'leadership', color: '#4CAF50',
+    x: colX(2.5), y: LEADERSHIP_Y_BOT,
+    detail: { description: 'AI Chief of Staff / COO. Planning, coordination, execution, memory management. Reports directly to Alex.', connections: ['All projects', 'All sub-agents', 'All systems'], channel: 'Telegram (trusted command channel)', status: 'Active' }},
+
+  // --- C-Suite Agents (THIRD ROW — flanking leadership) ---
+  { id: 'spark', label: 'Spark', role: 'CSO — Strategy & Planning', emoji: '✨', layer: 'agents', color: '#F59E0B',
+    x: colX(4.5), y: CSUITE_Y_BOT,
+    detail: { description: 'Chief Strategy Officer (Claude Opus). High-level planning, PRD creation, strategic analysis.', projects: ['Cross-Project (all)'], department: 'Strategy', capabilities: ['Strategic planning', 'PRD authoring', 'Decision frameworks', 'Risk analysis'] }},
+  { id: 'counsel', label: 'Counsel', role: 'CLO — Legal', emoji: '⚖️', layer: 'agents', color: '#DC2626',
+    x: colX(0.5), y: CSUITE_Y_BOT,
+    detail: { description: 'Chief Legal Officer. Reviews regulatory compliance, drafts disclaimers, flags IP and legal risks.', projects: ['Cross-Project (all)'], department: 'Legal', capabilities: ['Regulatory compliance', 'Disclaimer drafting', 'IP review', 'Legal risk assessment', 'Contract review'] }},
+  { id: 'ledger', label: 'Ledger', role: 'CFO — Finance', emoji: '📊', layer: 'agents', color: '#10B981',
+    x: colX(0.5), y: CSUITE_Y_TOP,
+    detail: { description: 'Chief Financial Officer. Financial planning, budgeting, revenue tracking, and fiscal strategy.', projects: ['KlaseCo.com', 'TAILWIND', 'SpawnPoint'], department: 'Finance', capabilities: ['Financial planning', 'Budget management', 'Revenue tracking', 'Fiscal strategy', 'P&L analysis'] }},
+  { id: 'shield', label: 'Shield', role: 'CISO — Security', emoji: '🛡️', layer: 'agents', color: '#6366F1',
+    x: colX(4.5), y: CSUITE_Y_TOP,
+    detail: { description: 'Chief Information Security Officer. Security posture, threat assessment, data protection.', projects: ['KlaseCo.com', 'SpawnPoint', 'TAILWIND'], department: 'Security', capabilities: ['Security audits', 'Threat assessment', 'Data protection', 'Compliance', 'Incident response'] }},
+  { id: 'echo', label: 'Echo', role: 'CMO — Marketing & Content', emoji: '📢', layer: 'agents', color: '#EC4899',
+    x: colX(3.5), y: CSUITE_Y_BOT,
+    detail: { description: 'Chief Marketing Officer. Content generation, voice synthesis, and media production.', projects: ['Aperture AI'], department: 'Marketing & Content', capabilities: ['Script writing', 'ElevenLabs TTS', 'Video generation', 'Social distribution'] }},
+  { id: 'bolt', label: 'Bolt', role: 'CTO — Engineering', emoji: '⚡', layer: 'agents', color: '#3B82F6',
+    x: colX(1.5), y: CSUITE_Y_TOP,
+    detail: { description: 'Chief Technology Officer. Primary code builder. Handles all engineering tasks across active projects.', projects: ['All projects'], department: 'Engineering', capabilities: ['Full-stack dev', 'API integration', 'Pipeline building'] }},
+  { id: 'lens', label: 'Lens', role: 'CRO — Research & Revenue', emoji: '🔍', layer: 'agents', color: '#06B6D4',
+    x: colX(3.5), y: CSUITE_Y_TOP,
+    detail: { description: 'Chief Revenue Officer. Data gathering, market research, and revenue intelligence.', projects: ['TAILWIND', 'Collectibles Intel'], department: 'Research & Revenue', capabilities: ['Market research', 'Data analysis', 'Trend identification'] }},
+  { id: 'relay', label: 'Relay', role: 'CIO — Infrastructure', emoji: '🔄', layer: 'agents', color: '#8B5CF6',
+    x: colX(1.5), y: CSUITE_Y_BOT,
+    detail: { description: 'Chief Information Officer. CI/CD pipelines, hosting, and infrastructure.', projects: ['KlaseCo.com', 'Rift Run'], department: 'Infrastructure', capabilities: ['Vercel deployment', 'DNS management', 'CI/CD'] }},
+
+  // --- Projects (BOTTOM ROW) ---
+  { id: 'klaseco', label: 'KlaseCo.com', role: 'Public Journey Site', emoji: '🌐', layer: 'projects', color: '#2D9C4A', badge: '🟢 Building',
+    x: colX(0), y: PROJ_Y,
+    detail: { description: 'Public-facing website documenting the KlaseCo journey.', status: 'Building', tech: 'Next.js, Vercel', agents: ['Bolt (CTO)', 'Relay (CIO)', 'Counsel (CLO)', 'Ledger (CFO)', 'Shield (CISO)'], next: 'Launch MVP, add blog content' }},
+  { id: 'tailwind', label: 'TAILWIND', role: 'Polymarket Copy-Trading', emoji: '📊', layer: 'projects', color: '#E8A317', badge: '🟡 Pivot',
+    x: colX(1), y: PROJ_Y,
+    detail: { description: 'Copy-trading system for Polymarket prediction markets.', status: 'Pivot', tech: 'Python, APIs', agents: ['Lens (CRO)', 'Bolt (CTO)', 'Counsel (CLO)', 'Ledger (CFO)', 'Shield (CISO)'], next: 'Evaluate new angle after Polymarket changes' }},
+  { id: 'aperture', label: 'Aperture AI', role: 'Faceless Content Studio', emoji: '🎬', layer: 'projects', color: '#E8A317', badge: '🟡 Planning',
+    x: colX(2), y: PROJ_Y,
+    detail: { description: 'AI-powered faceless content production.', status: 'Planning', tech: 'ElevenLabs, Video AI, Social APIs', agents: ['Echo (CMO)', 'Bolt (CTO)', 'Counsel (CLO)'], next: 'Define first content vertical, build pipeline' }},
+  { id: 'riftrun', label: 'Rift Run', role: 'Browser Game', emoji: '🎮', layer: 'projects', color: '#E8A317', badge: '🟡 Built',
+    x: colX(3), y: PROJ_Y,
+    detail: { description: 'Browser-based game. Core game built, needs distribution.', status: 'Built, Needs Distribution', tech: 'JavaScript, HTML5 Canvas', agents: ['Bolt (CTO)', 'Relay (CIO)', 'Counsel (CLO)'], next: 'Distribution plan, landing page, social push' }},
+  { id: 'spawnpoint', label: 'SpawnPoint', role: 'AI Agent Identity Platform', emoji: '🧬', layer: 'projects', color: '#3B82F6', badge: '🔵 Future',
+    x: colX(4), y: PROJ_Y,
+    detail: { description: 'Platform for AI agent identity, reputation, and coordination.', status: 'Future', tech: 'TBD', agents: ['Bolt (CTO)', 'Counsel (CLO)', 'Ledger (CFO)', 'Shield (CISO)'], next: 'Research phase, define MVP scope' }},
+  { id: 'collectibles', label: 'Collectibles Intel', role: 'Price Intelligence', emoji: '💎', layer: 'projects', color: '#3B82F6', badge: '🔵 Future',
+    x: colX(5), y: PROJ_Y,
+    detail: { description: 'Price intelligence for collectibles markets.', status: 'Future', tech: 'Python, Scrapers, APIs', agents: ['Lens (CRO)', 'Counsel (CLO)'], next: 'Market research, identify data sources' }},
+];
+
+const links = [
+  // Command: Alex → Kiwi
+  { source: 'alex', target: 'kiwi', type: 'command', label: 'Telegram' },
+  // Delegation: Kiwi → C-Suite Agents
+  { source: 'kiwi', target: 'bolt', type: 'delegation', label: 'Engineering' },
+  { source: 'kiwi', target: 'spark', type: 'delegation', label: 'Strategy' },
+  { source: 'kiwi', target: 'echo', type: 'delegation', label: 'Content' },
+  { source: 'kiwi', target: 'lens', type: 'delegation', label: 'Research' },
+  { source: 'kiwi', target: 'relay', type: 'delegation', label: 'Infra' },
+  { source: 'kiwi', target: 'counsel', type: 'delegation', label: 'Legal' },
+  { source: 'kiwi', target: 'ledger', type: 'delegation', label: 'Finance' },
+  { source: 'kiwi', target: 'shield', type: 'delegation', label: 'Security' },
+  // Agents → Projects (work output)
+  { source: 'bolt', target: 'klaseco', type: 'data' },
+  { source: 'bolt', target: 'tailwind', type: 'data' },
+  { source: 'bolt', target: 'aperture', type: 'data' },
+  { source: 'bolt', target: 'riftrun', type: 'data' },
+  { source: 'bolt', target: 'spawnpoint', type: 'data' },
+  { source: 'bolt', target: 'collectibles', type: 'data' },
+  { source: 'relay', target: 'klaseco', type: 'data' },
+  { source: 'relay', target: 'riftrun', type: 'data' },
+  { source: 'lens', target: 'tailwind', type: 'data' },
+  { source: 'lens', target: 'collectibles', type: 'data' },
+  { source: 'echo', target: 'aperture', type: 'data' },
+  // Legal review (all projects)
+  { source: 'counsel', target: 'klaseco', type: 'legal' },
+  { source: 'counsel', target: 'tailwind', type: 'legal' },
+  { source: 'counsel', target: 'aperture', type: 'legal' },
+  { source: 'counsel', target: 'riftrun', type: 'legal' },
+  { source: 'counsel', target: 'spawnpoint', type: 'legal' },
+  { source: 'counsel', target: 'collectibles', type: 'legal' },
+  // Finance
+  { source: 'ledger', target: 'klaseco', type: 'data' },
+  { source: 'ledger', target: 'tailwind', type: 'data' },
+  { source: 'ledger', target: 'spawnpoint', type: 'data' },
+  // Security
+  { source: 'shield', target: 'klaseco', type: 'data' },
+  { source: 'shield', target: 'spawnpoint', type: 'data' },
+  { source: 'shield', target: 'tailwind', type: 'data' },
+  // System links
+  { source: 'kiwi', target: 'memory', type: 'system' },
+  { source: 'kiwi', target: 'comms', type: 'system' },
+  { source: 'kiwi', target: 'infra', type: 'system' },
+  { source: 'echo', target: 'distribution', type: 'system' },
+  { source: 'echo', target: 'tools', type: 'system' },
+  { source: 'memory', target: 'infra', type: 'system' },
+];
+
+const clusters = [];
+
+// ── SVG Setup ───────────────────────────────────────────────────────────────
+
+const canvas = document.getElementById('canvas');
+const svgNS = 'http://www.w3.org/2000/svg';
+const svg = document.createElementNS(svgNS, 'svg');
+canvas.appendChild(svg);
+
+const defs = document.createElementNS(svgNS, 'defs');
+svg.appendChild(defs);
+
+defs.appendChild(createShadowFilter('shadow', 2, 0.08));
+defs.appendChild(createShadowFilter('shadow-hover', 8, 0.14));
+
+// Agent color map for per-agent colored connections
+const agentColors = {
+  alex: '#FFD700', kiwi: '#4CAF50',
+  bolt: '#3B82F6', spark: '#F59E0B', echo: '#EC4899',
+  lens: '#06B6D4', counsel: '#DC2626', relay: '#8B5CF6',
+  ledger: '#10B981', shield: '#6366F1'
+};
+
+// Create arrow markers for each color we need
+const markerColors = new Set(['#D4A017', '#4CAF50', '#6B7280', '#FFD700']);
+Object.values(agentColors).forEach(c => markerColors.add(c));
+
+function colorToId(color) { return color.replace('#', 'c'); }
+
+markerColors.forEach(color => {
+  const marker = document.createElementNS(svgNS, 'marker');
+  marker.setAttribute('id', `arrow-${colorToId(color)}`);
+  marker.setAttribute('viewBox', '0 0 10 7');
+  marker.setAttribute('refX', '9');
+  marker.setAttribute('refY', '3.5');
+  marker.setAttribute('markerWidth', '10');
+  marker.setAttribute('markerHeight', '7');
+  marker.setAttribute('orient', 'auto');
+  const path = document.createElementNS(svgNS, 'path');
+  path.setAttribute('d', 'M0,0.5 L8,3.5 L0,6.5 L2,3.5 Z');
+  path.setAttribute('fill', color);
+  marker.appendChild(path);
+  defs.appendChild(marker);
+});
+
+// Helper to get link color based on source agent and type
+function getLinkColor(link) {
+  if (link.type === 'command') return '#FFD700'; // Alex gold
+  if (link.type === 'delegation') return '#4CAF50'; // Kiwi green
+  if (link.type === 'system') return '#6B7280'; // gray
+  // For data and legal links, color by source agent
+  return agentColors[link.source] || '#6B7280';
+}
+
+function createShadowFilter(id, blur, opacity) {
+  const filter = document.createElementNS(svgNS, 'filter');
+  filter.setAttribute('id', id);
+  filter.setAttribute('x', '-20%'); filter.setAttribute('y', '-20%');
+  filter.setAttribute('width', '140%'); filter.setAttribute('height', '140%');
+  const feDropShadow = document.createElementNS(svgNS, 'feDropShadow');
+  feDropShadow.setAttribute('dx', '0');
+  feDropShadow.setAttribute('dy', String(blur / 4));
+  feDropShadow.setAttribute('stdDeviation', String(blur / 2));
+  feDropShadow.setAttribute('flood-opacity', String(opacity));
+  filter.appendChild(feDropShadow);
+  return filter;
+}
+
+const mainGroup = document.createElementNS(svgNS, 'g');
+mainGroup.setAttribute('id', 'main-group');
+svg.appendChild(mainGroup);
+
+const clustersGroup = document.createElementNS(svgNS, 'g');
+clustersGroup.setAttribute('id', 'clusters-group');
+mainGroup.appendChild(clustersGroup);
+
+const linksGroup = document.createElementNS(svgNS, 'g');
+linksGroup.setAttribute('id', 'links-group');
+mainGroup.appendChild(linksGroup);
+
+const nodesGroup = document.createElementNS(svgNS, 'g');
+nodesGroup.setAttribute('id', 'nodes-group');
+mainGroup.appendChild(nodesGroup);
+
+// ── Node dimensions ─────────────────────────────────────────────────────────
+
+const NODE_W = 160;
+const NODE_W_SMALL = 130;
+
+function getNodeW(node) {
+  if (node.layer === 'agents' && node.id !== 'spark') return NODE_W_SMALL;
+  return NODE_W;
+}
+
+function getNodeH(node) {
+  if (node.layer === 'leadership') return 70;
+  if (node.layer === 'projects') return 80;
+  if (node.layer === 'agents') return 60;
+  return 60;
+}
+
+// ── Render Cluster Backgrounds ──────────────────────────────────────────────
+
+const clusterElements = [];
+
+clusters.forEach(cluster => {
+  const projNode = nodes.find(n => n.id === cluster.project);
+  const agentNodes = cluster.agents.map(id => nodes.find(n => n.id === id));
+  if (!projNode) return;
+
+  const allNodes = [projNode, ...agentNodes];
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  allNodes.forEach(n => {
+    const w = getNodeW(n) / 2 + 16;
+    const h = getNodeH(n) / 2 + 16;
+    minX = Math.min(minX, n.x - w);
+    maxX = Math.max(maxX, n.x + w);
+    minY = Math.min(minY, n.y - h);
+    maxY = Math.max(maxY, n.y + h);
+  });
+
+  const rect = document.createElementNS(svgNS, 'rect');
+  rect.classList.add('cluster-bg');
+  rect.setAttribute('x', minX - 6);
+  rect.setAttribute('y', minY - 6);
+  rect.setAttribute('width', maxX - minX + 12);
+  rect.setAttribute('height', maxY - minY + 12);
+  clustersGroup.appendChild(rect);
+
+  clusterElements.push({ el: rect, cluster, projNode, agentNodes });
+});
+
+// ── Render Links ────────────────────────────────────────────────────────────
+
+const linkElements = [];
+
+links.forEach(link => {
+  const path = document.createElementNS(svgNS, 'path');
+  const linkColor = getLinkColor(link);
+  path.classList.add('link');
+  if (link.type === 'command') path.classList.add('link-command');
+  if (link.type === 'system') path.classList.add('link-system');
+  if (link.type === 'legal') path.classList.add('link-legal');
+  path.setAttribute('stroke', linkColor);
+  path.setAttribute('marker-end', `url(#arrow-${colorToId(linkColor)})`);
+  path.dataset.source = link.source;
+  path.dataset.target = link.target;
+  path.dataset.type = link.type;
+  path.dataset.color = linkColor;
+  linksGroup.appendChild(path);
+
+  if (link.label) {
+    const text = document.createElementNS(svgNS, 'text');
+    text.classList.add('link-label');
+    text.textContent = link.label;
+    text.dataset.source = link.source;
+    text.dataset.target = link.target;
+    linksGroup.appendChild(text);
+    linkElements.push({ el: path, labelEl: text, data: link });
+  } else {
+    linkElements.push({ el: path, data: link });
+  }
+});
+
+// ── Render Nodes ────────────────────────────────────────────────────────────
+
+const nodeElements = {};
+
+nodes.forEach(node => {
+  const g = document.createElementNS(svgNS, 'g');
+  g.classList.add('node');
+  g.dataset.id = node.id;
+  g.dataset.layer = node.layer;
+
+  const w = getNodeW(node);
+  const h = getNodeH(node);
+  const headerH = 26;
+
+  const card = document.createElementNS(svgNS, 'rect');
+  card.classList.add('node-card');
+  card.setAttribute('width', w);
+  card.setAttribute('height', h);
+  g.appendChild(card);
+
+  // Left color accent bar for agent nodes
+  if (node.layer === 'agents' || node.layer === 'leadership') {
+    const accent = document.createElementNS(svgNS, 'rect');
+    accent.setAttribute('x', '0');
+    accent.setAttribute('y', '0');
+    accent.setAttribute('width', '4');
+    accent.setAttribute('height', h);
+    accent.setAttribute('rx', '2');
+    accent.setAttribute('fill', node.color);
+    accent.setAttribute('opacity', '0.9');
+    g.appendChild(accent);
+  }
+
+  const clipId = `clip-${node.id}`;
+  const clipPath = document.createElementNS(svgNS, 'clipPath');
+  clipPath.setAttribute('id', clipId);
+  const clipRect = document.createElementNS(svgNS, 'rect');
+  clipRect.setAttribute('width', w);
+  clipRect.setAttribute('height', headerH);
+  clipRect.setAttribute('rx', '10'); clipRect.setAttribute('ry', '10');
+  clipPath.appendChild(clipRect);
+  defs.appendChild(clipPath);
+
+  const header = document.createElementNS(svgNS, 'rect');
+  header.classList.add('node-header');
+  header.setAttribute('width', w);
+  header.setAttribute('height', headerH);
+  header.setAttribute('fill', node.color);
+  header.setAttribute('clip-path', `url(#${clipId})`);
+  g.appendChild(header);
+
+  const headerBot = document.createElementNS(svgNS, 'rect');
+  headerBot.setAttribute('y', '10');
+  headerBot.setAttribute('width', w);
+  headerBot.setAttribute('height', String(headerH - 10));
+  headerBot.setAttribute('fill', node.color);
+  g.appendChild(headerBot);
+
+  const emoji = document.createElementNS(svgNS, 'text');
+  emoji.classList.add('node-emoji');
+  emoji.setAttribute('x', '10');
+  emoji.setAttribute('y', '20');
+  emoji.textContent = node.emoji;
+  g.appendChild(emoji);
+
+  const title = document.createElementNS(svgNS, 'text');
+  title.classList.add('node-title');
+  title.setAttribute('x', '32');
+  title.setAttribute('y', '18');
+  title.textContent = node.label;
+  g.appendChild(title);
+
+  const sub = document.createElementNS(svgNS, 'text');
+  sub.classList.add('node-subtitle');
+  sub.setAttribute('x', '10');
+  sub.setAttribute('y', String(headerH + 15));
+  sub.textContent = node.role;
+  g.appendChild(sub);
+
+  if (node.badge) {
+    const badgeG = document.createElementNS(svgNS, 'g');
+    const badgeColors = { '🟢': '#2D9C4A', '🟡': '#E8A317', '🔵': '#3B82F6' };
+    const bc = badgeColors[node.badge.charAt(0)] || '#6B7280';
+    const badgeRect = document.createElementNS(svgNS, 'rect');
+    badgeRect.setAttribute('x', '8');
+    badgeRect.setAttribute('y', String(headerH + 22));
+    badgeRect.setAttribute('width', String(node.badge.length * 6.5 + 12));
+    badgeRect.setAttribute('height', '16');
+    badgeRect.setAttribute('rx', '8');
+    badgeRect.setAttribute('fill', bc);
+    badgeRect.setAttribute('opacity', '0.15');
+    badgeG.appendChild(badgeRect);
+    const badgeText = document.createElementNS(svgNS, 'text');
+    badgeText.setAttribute('x', '14');
+    badgeText.setAttribute('y', String(headerH + 34));
+    badgeText.setAttribute('fill', bc);
+    badgeText.setAttribute('font-size', '10');
+    badgeText.setAttribute('font-weight', '600');
+    badgeText.textContent = node.badge;
+    badgeG.appendChild(badgeText);
+    g.appendChild(badgeG);
+  }
+
+  g.transform.baseVal.initialize(svg.createSVGTransform());
+  g.transform.baseVal.getItem(0).setTranslate(node.x - w / 2, node.y - h / 2);
+
+  nodesGroup.appendChild(g);
+  nodeElements[node.id] = { el: g, data: node, w: w, h: h };
+
+  // Desktop: hover
+  g.addEventListener('mouseenter', (e) => showTooltip(e, node));
+  g.addEventListener('mouseleave', hideTooltip);
+  g.addEventListener('click', () => showDetail(node));
+
+  // Mobile: tap
+  g.addEventListener('touchend', (e) => {
+    // Prevent if this was a drag
+    if (touchDragDistance > 10) return;
+    e.preventDefault();
+    showDetail(node);
+    // Brief tooltip
+    const touch = e.changedTouches[0];
+    if (touch) {
+      showTooltipAt(touch.clientX, touch.clientY, node);
+      setTimeout(hideTooltip, 1500);
+    }
+  });
+
+  makeDraggable(g, node);
+});
+
+// ── Update Links ────────────────────────────────────────────────────────────
+
+// Build offset map: for each (target) project, track how many agents connect to it
+const targetOffsets = {};
+links.forEach(link => {
+  if (link.type === 'data' || link.type === 'legal') {
+    const key = link.target;
+    if (!targetOffsets[key]) targetOffsets[key] = [];
+    targetOffsets[key].push(link.source);
+  }
+});
+
+function updateLinks() {
+  linkElements.forEach(({ el, labelEl, data }) => {
+    const sNode = nodeElements[data.source];
+    const tNode = nodeElements[data.target];
+    if (!sNode || !tNode) return;
+
+    const sx = sNode.data.x, sy = sNode.data.y;
+    const tx = tNode.data.x, ty = tNode.data.y;
+    const sH = sNode.h / 2, tH = tNode.h / 2;
+    const sW = sNode.w / 2, tW = tNode.w / 2;
+
+    let x1, y1, x2, y2;
+    const dy = ty - sy;
+    const dx = tx - sx;
+
+    if (Math.abs(dy) > Math.abs(dx) * 0.3) {
+      if (dy > 0) { x1 = sx; y1 = sy + sH; x2 = tx; y2 = ty - tH; }
+      else { x1 = sx; y1 = sy - sH; x2 = tx; y2 = ty + tH; }
+    } else {
+      if (dx > 0) { x1 = sx + sW; y1 = sy; x2 = tx - tW; y2 = ty; }
+      else { x1 = sx - sW; y1 = sy; x2 = tx + tW; y2 = ty; }
+    }
+
+    // Add curve offset for overlapping agent→project lines
+    let curveOffset = 0;
+    if ((data.type === 'data' || data.type === 'legal') && targetOffsets[data.target]) {
+      const sources = targetOffsets[data.target];
+      const idx = sources.indexOf(data.source);
+      const total = sources.length;
+      if (total > 1) {
+        curveOffset = (idx - (total - 1) / 2) * 12;
+      }
+    }
+
+    const midY = (y1 + y2) / 2;
+    const d = `M${x1},${y1} C${x1 + curveOffset},${midY} ${x2 + curveOffset},${midY} ${x2},${y2}`;
+    el.setAttribute('d', d);
+
+    if (labelEl) {
+      labelEl.setAttribute('x', (x1 + x2) / 2);
+      labelEl.setAttribute('y', (y1 + y2) / 2 - 6);
+      labelEl.setAttribute('text-anchor', 'middle');
+    }
+  });
+
+  clusterElements.forEach(({ el, projNode, agentNodes }) => {
+    const allNodes = [projNode, ...agentNodes];
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    allNodes.forEach(n => {
+      const nw = getNodeW(n) / 2 + 16;
+      const nh = getNodeH(n) / 2 + 16;
+      minX = Math.min(minX, n.x - nw);
+      maxX = Math.max(maxX, n.x + nw);
+      minY = Math.min(minY, n.y - nh);
+      maxY = Math.max(maxY, n.y + nh);
+    });
+    el.setAttribute('x', minX - 6);
+    el.setAttribute('y', minY - 6);
+    el.setAttribute('width', maxX - minX + 12);
+    el.setAttribute('height', maxY - minY + 12);
+  });
+}
+
+updateLinks();
+
+// ── Drag (mouse + touch) ───────────────────────────────────────────────────
+
+let touchDragDistance = 0;
+
+function makeDraggable(el, node) {
+  let dragging = false, startX, startY, origX, origY;
+
+  // Mouse drag
+  el.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    dragging = true;
+    const pt = screenToSVG(e.clientX, e.clientY);
+    startX = pt.x; startY = pt.y;
+    origX = node.x; origY = node.y;
+    e.stopPropagation();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const pt = screenToSVG(e.clientX, e.clientY);
+    node.x = origX + (pt.x - startX);
+    node.y = origY + (pt.y - startY);
+    const w = getNodeW(node);
+    const h = getNodeH(node);
+    el.transform.baseVal.getItem(0).setTranslate(node.x - w / 2, node.y - h / 2);
+    updateLinks();
+  });
+
+  window.addEventListener('mouseup', () => { dragging = false; });
+
+  // Touch drag for nodes
+  let touchDragging = false, touchStartPt = null;
+  el.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    touchDragging = true;
+    touchDragDistance = 0;
+    const pt = screenToSVG(e.touches[0].clientX, e.touches[0].clientY);
+    touchStartPt = pt;
+    origX = node.x; origY = node.y;
+    e.stopPropagation();
+  }, { passive: true });
+
+  el.addEventListener('touchmove', (e) => {
+    if (!touchDragging || e.touches.length !== 1) return;
+    const pt = screenToSVG(e.touches[0].clientX, e.touches[0].clientY);
+    const dx = pt.x - touchStartPt.x;
+    const dy = pt.y - touchStartPt.y;
+    touchDragDistance = Math.sqrt(dx * dx + dy * dy);
+    node.x = origX + dx;
+    node.y = origY + dy;
+    const w = getNodeW(node);
+    const h = getNodeH(node);
+    el.transform.baseVal.getItem(0).setTranslate(node.x - w / 2, node.y - h / 2);
+    updateLinks();
+  }, { passive: true });
+
+  el.addEventListener('touchend', () => { touchDragging = false; }, { passive: true });
+}
+
+function screenToSVG(cx, cy) {
+  const pt = svg.createSVGPoint();
+  pt.x = cx; pt.y = cy;
+  return pt.matrixTransform(mainGroup.getScreenCTM().inverse());
+}
+
+// ── Zoom & Pan (mouse + touch) ──────────────────────────────────────────────
+
+let scale = 1, panX = 0, panY = 0;
+let isPanning = false, panStartX, panStartY, panOrigX, panOrigY;
+
+function applyTransform() {
+  mainGroup.setAttribute('transform', `translate(${panX},${panY}) scale(${scale})`);
+}
+
+// Mouse wheel zoom
+svg.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.92 : 1.08;
+  const newScale = Math.min(3, Math.max(0.2, scale * delta));
+  const rect = svg.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  panX = mx - (mx - panX) * (newScale / scale);
+  panY = my - (my - panY) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+// Mouse pan
+svg.addEventListener('mousedown', (e) => {
+  if (e.target === svg || e.target === mainGroup || e.target === linksGroup || e.target === nodesGroup || e.target === clustersGroup) {
+    isPanning = true;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panOrigX = panX; panOrigY = panY;
+    svg.style.cursor = 'grabbing';
+  }
+});
+window.addEventListener('mousemove', (e) => {
+  if (!isPanning) return;
+  panX = panOrigX + (e.clientX - panStartX);
+  panY = panOrigY + (e.clientY - panStartY);
+  applyTransform();
+});
+window.addEventListener('mouseup', () => {
+  isPanning = false;
+  svg.style.cursor = '';
+});
+
+// Touch: pinch-to-zoom + drag-to-pan on SVG background
+let touchPanActive = false;
+let pinchActive = false;
+let pinchStartDist = 0;
+let pinchStartScale = 1;
+let pinchMidX = 0, pinchMidY = 0;
+let touchPanStartX = 0, touchPanStartY = 0, touchPanOrigX = 0, touchPanOrigY = 0;
+
+svg.addEventListener('touchstart', (e) => {
+  // Check if touch started on a node (handled by node's own listener)
+  const target = e.target.closest('.node');
+  if (target) return;
+
+  if (e.touches.length === 1) {
+    touchPanActive = true;
+    touchPanStartX = e.touches[0].clientX;
+    touchPanStartY = e.touches[0].clientY;
+    touchPanOrigX = panX;
+    touchPanOrigY = panY;
+  } else if (e.touches.length === 2) {
+    touchPanActive = false;
+    pinchActive = true;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinchStartDist = Math.sqrt(dx * dx + dy * dy);
+    pinchStartScale = scale;
+    const rect = svg.getBoundingClientRect();
+    pinchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+    pinchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+  }
+}, { passive: true });
+
+svg.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 1 && touchPanActive) {
+    e.preventDefault();
+    panX = touchPanOrigX + (e.touches[0].clientX - touchPanStartX);
+    panY = touchPanOrigY + (e.touches[0].clientY - touchPanStartY);
+    applyTransform();
+  } else if (e.touches.length === 2 && pinchActive) {
+    e.preventDefault();
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const newScale = Math.min(3, Math.max(0.2, pinchStartScale * (dist / pinchStartDist)));
+    panX = pinchMidX - (pinchMidX - panX) * (newScale / scale);
+    panY = pinchMidY - (pinchMidY - panY) * (newScale / scale);
+    scale = newScale;
+    applyTransform();
+  }
+}, { passive: false });
+
+svg.addEventListener('touchend', (e) => {
+  if (e.touches.length < 2) pinchActive = false;
+  if (e.touches.length < 1) touchPanActive = false;
+}, { passive: true });
+
+function resetView() { scale = 1; panX = 0; panY = 0; applyTransform(); centerView(); }
+function zoomIn() { scale = Math.min(3, scale * 1.2); applyTransform(); }
+function zoomOut() { scale = Math.max(0.2, scale * 0.83); applyTransform(); }
+
+// ── Tooltip ─────────────────────────────────────────────────────────────────
+
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(e, node) {
+  showTooltipAt(e.clientX, e.clientY, node);
+}
+
+function showTooltipAt(clientX, clientY, node) {
+  if (node.id === 'counsel') {
+    tooltip.textContent = 'Counsel — CLO. Reviews regulatory compliance, drafts disclaimers, flags IP and legal risks.';
+  } else if (node.id === 'ledger') {
+    tooltip.textContent = 'Ledger — CFO. Financial planning, budgeting, revenue tracking, and fiscal strategy.';
+  } else if (node.id === 'shield') {
+    tooltip.textContent = 'Shield — CISO. Security posture, threat assessment, data protection.';
+  } else {
+    tooltip.textContent = `${node.emoji} ${node.label} — ${node.role}`;
+  }
+  tooltip.classList.add('visible');
+  positionTooltip(clientX, clientY);
+}
+
+function positionTooltip(cx, cy) {
+  const tw = tooltip.offsetWidth;
+  const th = tooltip.offsetHeight;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let left = cx + 12;
+  let top = cy - 30;
+  if (left + tw > vw - 10) left = vw - tw - 10;
+  if (left < 10) left = 10;
+  if (top + th > vh - 10) top = vh - th - 10;
+  if (top < 10) top = 10;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+svg.addEventListener('mousemove', (e) => {
+  if (tooltip.classList.contains('visible')) positionTooltip(e.clientX, e.clientY);
+});
+
+// ── Detail Panel ────────────────────────────────────────────────────────────
+
+const detailPanel = document.getElementById('detail-panel');
+const detailContent = document.getElementById('detail-content');
+
+function showDetail(node) {
+  let html = `<h2>${node.emoji} ${node.label}</h2>`;
+  html += `<div class="detail-role">${node.role}</div>`;
+
+  if (node.badge) {
+    const badgeColors = { '🟢': '#2D9C4A', '🟡': '#E8A317', '🔵': '#3B82F6' };
+    const bc = badgeColors[node.badge.charAt(0)] || '#6B7280';
+    html += `<span class="status-badge" style="background:${bc}20; color:${bc}">${node.badge}</span>`;
+  }
+
+  const d = node.detail;
+  if (d) {
+    if (d.description) html += `<div class="detail-section"><h4>Description</h4><p>${d.description}</p></div>`;
+    if (d.department) html += `<div class="detail-section"><h4>Department</h4><p>${d.department}</p></div>`;
+    if (d.status) html += `<div class="detail-section"><h4>Status</h4><p>${d.status}</p></div>`;
+    if (d.tech) html += `<div class="detail-section"><h4>Tech Stack</h4><p>${d.tech}</p></div>`;
+    if (d.agents) html += `<div class="detail-section"><h4>Assigned Agents</h4><ul>${d.agents.map(a => `<li>${a}</li>`).join('')}</ul></div>`;
+    if (d.projects) html += `<div class="detail-section"><h4>Projects</h4><ul>${d.projects.map(p => `<li>${p}</li>`).join('')}</ul></div>`;
+    if (d.capabilities) html += `<div class="detail-section"><h4>Capabilities</h4><ul>${d.capabilities.map(c => `<li>${c}</li>`).join('')}</ul></div>`;
+    if (d.components) html += `<div class="detail-section"><h4>Components</h4><ul>${d.components.map(c => `<li>${c}</li>`).join('')}</ul></div>`;
+    if (d.connections) html += `<div class="detail-section"><h4>Connections</h4><ul>${d.connections.map(c => `<li>${c}</li>`).join('')}</ul></div>`;
+    if (d.channel) html += `<div class="detail-section"><h4>Channel</h4><p>${d.channel}</p></div>`;
+    if (d.next) html += `<div class="detail-section"><h4>Next Steps</h4><p>${d.next}</p></div>`;
+  }
+
+  detailContent.innerHTML = html;
+  detailPanel.classList.add('open');
+}
+
+function closeDetail() { detailPanel.classList.remove('open'); }
+
+svg.addEventListener('click', (e) => {
+  if (e.target === svg || e.target === mainGroup || e.target === linksGroup || e.target === clustersGroup) {
+    closeDetail();
+  }
+});
+
+// Close on tap background (mobile)
+svg.addEventListener('touchend', (e) => {
+  const target = e.target.closest('.node');
+  if (!target && (e.target === svg || e.target === mainGroup || e.target === linksGroup || e.target === clustersGroup || e.target.classList.contains('cluster-bg') || e.target.classList.contains('link'))) {
+    closeDetail();
+  }
+});
+
+// Bottom sheet swipe-to-dismiss on mobile
+if (isMobile) {
+  let sheetStartY = 0, sheetDragging = false;
+  const dragHandle = detailPanel.querySelector('.dp-drag-handle');
+
+  dragHandle.addEventListener('touchstart', (e) => {
+    sheetStartY = e.touches[0].clientY;
+    sheetDragging = true;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!sheetDragging) return;
+    const dy = e.touches[0].clientY - sheetStartY;
+    if (dy > 0) {
+      detailPanel.style.transition = 'none';
+      detailPanel.style.transform = `translateY(${dy}px)`;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    if (!sheetDragging) return;
+    sheetDragging = false;
+    detailPanel.style.transition = '';
+    const currentTransform = detailPanel.style.transform;
+    const match = currentTransform.match(/translateY\((\d+)px\)/);
+    if (match && parseInt(match[1]) > 80) {
+      closeDetail();
+    } else {
+      detailPanel.style.transform = '';
+      if (detailPanel.classList.contains('open')) {
+        detailPanel.style.transform = 'translateY(0)';
+      }
+    }
+  });
+}
+
+// ── Layer Toggle ────────────────────────────────────────────────────────────
+
+const activeLayers = new Set(['leadership', 'projects', 'agents', 'systems']);
+
+function toggleLayer(btn) {
+  const layer = btn.dataset.layer;
+  if (activeLayers.has(layer)) {
+    activeLayers.delete(layer);
+    btn.classList.remove('active');
+  } else {
+    activeLayers.add(layer);
+    btn.classList.add('active');
+  }
+  applyLayerVisibility();
+}
+
+function applyLayerVisibility() {
+  Object.values(nodeElements).forEach(({ el, data }) => {
+    el.style.display = activeLayers.has(data.layer) ? '' : 'none';
+  });
+  linkElements.forEach(({ el, data }) => {
+    const sLayer = nodeElements[data.source]?.data.layer;
+    const tLayer = nodeElements[data.target]?.data.layer;
+    el.style.display = (activeLayers.has(sLayer) && activeLayers.has(tLayer)) ? '' : 'none';
+  });
+  const showClusters = activeLayers.has('projects') || activeLayers.has('agents');
+  clusterElements.forEach(({ el }) => {
+    el.style.display = showClusters ? '' : 'none';
+  });
+}
+
+// ── Workflow Highlight ──────────────────────────────────────────────────────
+
+const workflows = {
+  planning: { nodes: ['alex', 'kiwi', 'spark', 'bolt', 'ledger', 'shield'], color: '#D4A017' },
+  content: { nodes: ['kiwi', 'echo', 'bolt', 'aperture', 'tools', 'distribution'], color: '#8B5CF6' },
+  approval: { nodes: ['kiwi', 'alex'], color: '#2D9C4A' },
+  memory: { nodes: ['kiwi', 'memory', 'infra'], color: '#3B82F6' },
+  devops: { nodes: ['kiwi', 'relay', 'klaseco', 'riftrun', 'infra'], color: '#6B7280' },
+  legal: { nodes: ['kiwi', 'counsel', 'ledger', 'shield', 'klaseco', 'tailwind', 'aperture', 'riftrun', 'spawnpoint', 'collectibles'], color: '#DC2626' },
+};
+
+let activeWorkflow = null;
+
+function highlightWorkflow(name) {
+  if (activeWorkflow === name) {
+    clearHighlight();
+    activeWorkflow = null;
+    return;
+  }
+  activeWorkflow = name;
+  const wf = workflows[name];
+  const wfSet = new Set(wf.nodes);
+
+  Object.values(nodeElements).forEach(({ el, data }) => {
+    el.style.opacity = wfSet.has(data.id) ? '1' : '0.15';
+  });
+  linkElements.forEach(({ el, data }) => {
+    const involved = wfSet.has(data.source) && wfSet.has(data.target);
+    el.style.opacity = involved ? '1' : '0.05';
+    if (involved) {
+      el.style.strokeWidth = '3';
+      // Keep original agent color, don't override with workflow color
+    } else {
+      el.style.strokeWidth = '';
+    }
+  });
+  clusterElements.forEach(({ el }) => { el.style.opacity = '0.3'; });
+}
+
+function clearHighlight() {
+  Object.values(nodeElements).forEach(({ el }) => { el.style.opacity = ''; });
+  linkElements.forEach(({ el }) => {
+    el.style.opacity = '';
+    // Restore original agent color
+    el.style.stroke = el.dataset.color || '';
+    el.style.strokeWidth = '';
+  });
+  clusterElements.forEach(({ el }) => { el.style.opacity = ''; });
+}
+
+svg.addEventListener('dblclick', () => {
+  clearHighlight();
+  activeWorkflow = null;
+});
+
+// ── Initial center ──────────────────────────────────────────────────────────
+
+function centerView() {
+  const rect = svg.getBoundingClientRect();
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  nodes.forEach(n => {
+    const w = getNodeW(n);
+    minX = Math.min(minX, n.x - w / 2);
+    maxX = Math.max(maxX, n.x + w / 2);
+    minY = Math.min(minY, n.y - 50);
+    maxY = Math.max(maxY, n.y + 50);
+  });
+  const cw = maxX - minX, ch = maxY - minY;
+  const sx = (rect.width - 80) / cw;
+  const sy = (rect.height - 120) / ch;
+  scale = Math.min(sx, sy, 1.1);
+  // On mobile, allow smaller default scale to fit everything
+  if (isMobile) scale = Math.min(scale, 0.7);
+  panX = (rect.width - cw * scale) / 2 - minX * scale;
+  panY = (rect.height - ch * scale) / 2 - minY * scale + 26;
+  applyTransform();
+}
+
+requestAnimationFrame(() => requestAnimationFrame(centerView));
+window.addEventListener('resize', centerView);
+window.addEventListener('orientationchange', () => setTimeout(centerView, 100));
+</script>
+</body>
+</html>
