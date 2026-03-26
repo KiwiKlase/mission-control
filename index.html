@@ -412,6 +412,105 @@
   .agent-card-jobs .job-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
 
   /* ═══════════════════════════════════════════════════════════
+     TAB 4: LIVE FEED
+     ═══════════════════════════════════════════════════════════ */
+  #view-feed {
+    background: #0a0a1a; overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .feed-container {
+    padding: 20px; max-width: 800px; margin: 0 auto;
+  }
+  .feed-header { margin-bottom: 20px; }
+  .feed-title-row {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 4px;
+  }
+  .feed-title-row h2 {
+    font-size: 20px; font-weight: 700; color: #fff; margin: 0;
+  }
+  .feed-live-indicator {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: #4CAF50;
+    background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.25);
+    border-radius: 20px; padding: 4px 12px;
+  }
+  .feed-live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #4CAF50;
+    animation: feedPulse 2s ease-in-out infinite;
+  }
+  @keyframes feedPulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(76,175,80,0); }
+  }
+  .feed-subtitle {
+    font-size: 13px; color: rgba(255,255,255,0.4); margin: 0;
+  }
+  .feed-filters {
+    display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .feed-filter-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .feed-filter-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+  .feed-filter-btn.active {
+    background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.3);
+    color: #FFD700;
+  }
+  .feed-timeline {
+    position: relative;
+    padding-left: 20px;
+    border-left: 2px solid rgba(255,255,255,0.06);
+  }
+  .feed-item {
+    position: relative; margin-bottom: 16px; padding: 16px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; transition: all 0.2s;
+    animation: feedFadeIn 0.4s ease-out both;
+  }
+  .feed-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+  .feed-item::before {
+    content: ''; position: absolute; left: -27px; top: 22px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #1a1a2e; border: 2px solid rgba(255,255,255,0.15);
+  }
+  @keyframes feedFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feed-item-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .feed-agent {
+    font-size: 14px; font-weight: 700;
+  }
+  .feed-type-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .feed-type-delivery { background: rgba(76,175,80,0.15); color: #4CAF50; }
+  .feed-type-decision { background: rgba(255,215,0,0.15); color: #FFD700; }
+  .feed-type-cron { background: rgba(139,92,246,0.15); color: #8B5CF6; }
+  .feed-type-system { background: rgba(148,163,184,0.15); color: #94A3B8; }
+  .feed-message {
+    font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .feed-time {
+    font-size: 11px; color: rgba(255,255,255,0.35); display: flex;
+    align-items: center; gap: 8px;
+  }
+  .feed-time-dot { color: rgba(255,255,255,0.15); }
+  .feed-empty {
+    text-align: center; color: rgba(255,255,255,0.3); font-size: 14px;
+    padding: 60px 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
      MOBILE RESPONSIVE
      ═══════════════════════════════════════════════════════════ */
   @media (max-width: 767px) {
@@ -469,6 +568,15 @@
     #detail-2d .dp-drag-handle-2d { display: block; }
     #tooltip-2d { max-width: calc(100vw - 32px); }
 
+    /* Feed mobile */
+    .feed-container { padding: 12px; }
+    .feed-title-row h2 { font-size: 16px; }
+    .feed-filters { gap: 4px; }
+    .feed-filter-btn { padding: 6px 10px; font-size: 11px; }
+    .feed-item { padding: 12px; margin-bottom: 12px; }
+    .feed-timeline { padding-left: 16px; }
+    .feed-item::before { left: -23px; }
+
     /* Schedule mobile */
     .schedule-container { padding: 12px; }
     .schedule-header h2 { font-size: 16px; }
@@ -505,6 +613,7 @@
     <button class="nav-tab active" data-tab="view-3d" onclick="switchTab(this)">3D Command Center</button>
     <button class="nav-tab" data-tab="view-2d" onclick="switchTab(this)">Operational Map</button>
     <button class="nav-tab" data-tab="view-schedule" onclick="switchTab(this)">Schedule</button>
+    <button class="nav-tab" data-tab="view-feed" onclick="switchTab(this)">Live Feed</button>
   </div>
 </nav>
 
@@ -674,6 +783,39 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════
+     TAB 4: LIVE FEED
+     ═══════════════════════════════════════════════════════════ -->
+<div id="view-feed" class="tab-view">
+  <div class="feed-container">
+    <div class="feed-header">
+      <div class="feed-title-row">
+        <h2>📡 Live Feed</h2>
+        <div class="feed-live-indicator">
+          <span class="feed-live-dot"></span>
+          <span>Live</span>
+        </div>
+      </div>
+      <p class="feed-subtitle">Real-time activity across all agents</p>
+    </div>
+
+    <div class="feed-filters" id="feed-filters">
+      <button class="feed-filter-btn active" data-filter="all" onclick="setFeedFilter('all', this)">All</button>
+      <button class="feed-filter-btn" data-filter="delivery" onclick="setFeedFilter('delivery', this)">Deliveries</button>
+      <button class="feed-filter-btn" data-filter="decision" onclick="setFeedFilter('decision', this)">Decisions</button>
+      <button class="feed-filter-btn" data-filter="cron" onclick="setFeedFilter('cron', this)">Cron</button>
+      <button class="feed-filter-btn" data-filter="system" onclick="setFeedFilter('system', this)">System</button>
+    </div>
+
+    <div class="feed-timeline" id="feed-timeline">
+      <div class="feed-empty">
+        <div style="font-size:32px;margin-bottom:8px;">📭</div>
+        Loading feed...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════════════════════════ -->
 
@@ -708,6 +850,7 @@ function switchTab(btn) {
   if (tabId === 'view-3d' && !threeInitialized) init3D();
   if (tabId === 'view-2d' && !twoInitialized) init2D();
   if (tabId === 'view-schedule' && !scheduleInitialized) initSchedule();
+  if (tabId === 'view-feed' && !feedInitialized) initFeed();
 
   // Handle resize for active view
   if (tabId === 'view-3d' && threeInitialized) handleResize3D();
@@ -1616,6 +1759,113 @@ function initSchedule() {
 
   renderTimeline();
 }
+
+// ════════════════════════════════════════════════════════════════
+// TAB 4: LIVE FEED
+// ════════════════════════════════════════════════════════════════
+
+let feedInitialized = false;
+let feedData = [];
+let feedFilter = 'all';
+let feedRefreshInterval = null;
+
+const AGENT_COLORS_FEED = {
+  Kiwi: '#4CAF50', Bolt: '#3B82F6', Spark: '#F59E0B', Echo: '#EC4899',
+  Lens: '#06B6D4', Counsel: '#DC2626', Relay: '#8B5CF6', Ledger: '#10B981',
+  Shield: '#6366F1'
+};
+
+function initFeed() {
+  feedInitialized = true;
+  fetchFeed();
+  // Auto-refresh every 30 seconds
+  feedRefreshInterval = setInterval(fetchFeed, 30000);
+}
+
+function fetchFeed() {
+  fetch('feed.json?t=' + Date.now())
+    .then(r => r.ok ? r.json() : [])
+    .then(data => {
+      feedData = data;
+      renderFeed();
+    })
+    .catch(() => {
+      feedData = [];
+      renderFeed();
+    });
+}
+
+function renderFeed() {
+  const timeline = document.getElementById('feed-timeline');
+  const filtered = feedFilter === 'all' ? feedData : feedData.filter(item => item.type === feedFilter);
+
+  // Sort newest first
+  const sorted = [...filtered].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  if (sorted.length === 0) {
+    timeline.innerHTML = `<div class="feed-empty"><div style="font-size:32px;margin-bottom:8px;">📭</div>${feedData.length === 0 ? 'No feed data yet' : 'No items match this filter'}</div>`;
+    return;
+  }
+
+  timeline.innerHTML = sorted.map((item, i) => {
+    const date = new Date(item.timestamp);
+    const absTime = formatFeedTime(date);
+    const relTime = relativeFeedTime(date);
+    const agentColor = AGENT_COLORS_FEED[item.agent] || '#94A3B8';
+
+    return `<div class="feed-item" style="animation-delay:${Math.min(i * 0.05, 0.5)}s">
+      <div class="feed-item-header">
+        <span class="feed-agent" style="color:${agentColor}">${item.emoji || ''} ${item.agent}</span>
+        <span class="feed-type-badge feed-type-${item.type}">${item.type}</span>
+      </div>
+      <div class="feed-message">${escapeHtml(item.message)}</div>
+      <div class="feed-time">
+        <span>${absTime}</span>
+        <span class="feed-time-dot">·</span>
+        <span>${relTime}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function formatFeedTime(date) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h = date.getHours();
+  const m = date.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hr = h % 12 || 12;
+  const min = m < 10 ? '0' + m : m;
+  return `${months[date.getMonth()]} ${date.getDate()}, ${hr}:${min} ${ampm}`;
+}
+
+function relativeFeedTime(date) {
+  const now = new Date();
+  const diff = now - date;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return 'just now';
+  if (minutes < 60) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+  if (hours < 24) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+  if (days === 1) return 'yesterday';
+  if (days < 7) return `${days} days ago`;
+  return `${Math.floor(days / 7)} weeks ago`;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+window.setFeedFilter = function(filter, btn) {
+  feedFilter = filter;
+  document.querySelectorAll('.feed-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFeed();
+};
 
 // ════════════════════════════════════════════════════════════════
 // GLOBAL: Resize Handler
