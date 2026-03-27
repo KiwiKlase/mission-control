@@ -630,20 +630,18 @@
     <div style="font-weight:700;margin-bottom:4px;opacity:0.8;">Leadership</div>
     <div><span class="dot" style="background:#FFD700"></span> Alex (CEO)</div>
     <div><span class="dot" style="background:#4CAF50"></span> Kiwi (COO)</div>
-    <div style="font-weight:700;margin-top:6px;margin-bottom:4px;opacity:0.8;">C-Suite</div>
+    <div style="font-weight:700;margin-top:6px;margin-bottom:4px;opacity:0.8;">C-Suite (9 Agents)</div>
     <div><span class="dot" style="background:#3B82F6"></span> Bolt (CTO)</div>
     <div><span class="dot" style="background:#F59E0B"></span> Spark (CSO)</div>
     <div><span class="dot" style="background:#EC4899"></span> Echo (CMO)</div>
     <div><span class="dot" style="background:#06B6D4"></span> Lens (CRO)</div>
+    <div><span class="dot" style="background:#FF6B35"></span> Pixel (CDO)</div>
     <div><span class="dot" style="background:#DC2626"></span> Counsel (CLO)</div>
     <div><span class="dot" style="background:#8B5CF6"></span> Relay (CIO)</div>
     <div><span class="dot" style="background:#10B981"></span> Ledger (CFO)</div>
     <div><span class="dot" style="background:#6366F1"></span> Shield (CISO)</div>
-    <div style="font-weight:700;margin-top:6px;margin-bottom:4px;opacity:0.8;">Projects</div>
-    <div><span class="dot" style="background:#00ff88"></span> Active / Building</div>
-    <div><span class="dot" style="background:#ffdd00"></span> In Progress</div>
-    <div><span class="dot" style="background:#4488ff"></span> Planned / Long Term</div>
-    <div><span class="dot" style="background:#ffffff"></span> Systems</div>
+    <div style="font-weight:700;margin-top:6px;margin-bottom:4px;opacity:0.8;">Systems</div>
+    <div><span class="dot" style="background:#ffffff"></span> Infrastructure</div>
   </div>
 
   <div id="tooltip-3d">
@@ -674,8 +672,7 @@
     <span class="subtitle">Architecture Overview</span>
     <div class="layer-toggles-2d">
       <button class="layer-toggle-2d active" data-layer="leadership" onclick="toggleLayer2D(this)">👑 Leadership</button>
-      <button class="layer-toggle-2d active" data-layer="projects" onclick="toggleLayer2D(this)">📦 Projects</button>
-      <button class="layer-toggle-2d active" data-layer="agents" onclick="toggleLayer2D(this)">🤖 Agents</button>
+      <button class="layer-toggle-2d active" data-layer="agents" onclick="toggleLayer2D(this)">🤖 C-Suite</button>
       <button class="layer-toggle-2d active" data-layer="systems" onclick="toggleLayer2D(this)">⚙️ Systems</button>
     </div>
     <div class="toolbar-2d">
@@ -696,11 +693,12 @@
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#4CAF50"></div> Kiwi (COO)</div>
       </div>
       <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; margin-bottom:8px;">
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">C-Suite Agents</div>
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">C-Suite (9 Agents)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#3B82F6"></div> Bolt (CTO)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#F59E0B"></div> Spark (CSO)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#EC4899"></div> Echo (CMO)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#06B6D4"></div> Lens (CRO)</div>
+        <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#FF6B35"></div> Pixel (CDO)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#DC2626"></div> Counsel (CLO)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#8B5CF6"></div> Relay (CIO)</div>
         <div class="legend-item-2d"><div class="legend-dot-2d" style="background:#10B981"></div> Ledger (CFO)</div>
@@ -710,7 +708,6 @@
         <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Connections</div>
         <div class="legend-item-2d"><div class="legend-color-2d" style="background:#FFD700"></div> Command</div>
         <div class="legend-item-2d"><div class="legend-color-2d" style="background:#4CAF50"></div> Delegation</div>
-        <div class="legend-item-2d"><div class="legend-color-2d" style="background:#3B82F6;height:2px;"></div> Agent → Project</div>
         <div class="legend-item-2d"><div class="legend-dash-2d" style="border-color:rgba(255,255,255,0.3)"></div> System Link</div>
       </div>
     </div>
@@ -882,7 +879,7 @@ function init3D() {
     gold: 0xFFD700, kiwi: 0x4CAF50, white: 0xffffff,
     boltBlue: 0x3B82F6, sparkOrange: 0xF59E0B, echoPink: 0xEC4899,
     lensCyan: 0x06B6D4, crimson: 0xDC2626, relayPurple: 0x8B5CF6,
-    emerald: 0x10B981, indigo: 0x6366F1,
+    emerald: 0x10B981, indigo: 0x6366F1, pixelOrange: 0xFF6B35,
   };
   function hexToCSS(hex) { return '#' + hex.toString(16).padStart(6, '0'); }
   function glowMat(color, ei = 0.6) {
@@ -963,38 +960,21 @@ function init3D() {
 
   // Projects
   const projects = [
-    { id:'klaseco', name:'KlaseCo.com', subtitle:'Public Journey Site', color:COLORS.green, status:'Building', icon:'🟢', desc:'The public-facing website documenting the KlaseCo journey. First project to ship.' },
-    { id:'tailwind', name:'TAILWIND', subtitle:'Polymarket Copy-Trading', color:COLORS.yellow, status:'Pivot in Progress', icon:'🟡', desc:'Prediction market copy-trading platform. Currently pivoting strategy.' },
-    { id:'aperture', name:'Aperture AI', subtitle:'Faceless Content Studio', color:COLORS.yellow, status:'Planning', icon:'🟡', desc:'AI-powered faceless content generation studio.' },
-    { id:'riftrun', name:'Rift Run', subtitle:'Browser Game', color:COLORS.yellow, status:'Built, Not Shipped', icon:'🟡', desc:'Browser-based game, built but not yet deployed.' },
-    { id:'spawnpoint', name:'SpawnPoint', subtitle:'AI Agent Identity Platform', color:COLORS.blue, status:'Long Term', icon:'🔵', desc:'Platform for AI agent identity and management.' },
-    { id:'collectibles', name:'Collectibles Intel', subtitle:'Price Intelligence', color:COLORS.blue, status:'Long Term', icon:'🔵', desc:'Price intelligence and analytics for collectibles markets.' },
-  ];
-  const PROJECT_RADIUS = 10, PROJECT_Y = -6;
-  projects.forEach((p, i) => {
-    const angle = (i / projects.length) * Math.PI * 2 - Math.PI / 2;
-    const x = Math.cos(angle) * PROJECT_RADIUS, z = Math.sin(angle) * PROJECT_RADIUS;
-    const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.7, 0), glowMat(p.color, 0.7));
-    mesh.position.set(x, PROJECT_Y, z); scene3d.add(mesh);
-    const lb = makeLabel(p.name, 32); lb.position.set(x, PROJECT_Y+1.4, z); scene3d.add(lb);
-    const sColor = p.color === COLORS.green ? '#00ff88' : p.color === COLORS.yellow ? '#ffdd00' : '#4488ff';
-    const sl = makeLabel(p.status, 24, sColor); sl.position.set(x, PROJECT_Y+0.95, z);
-    const ss = isMobile ? 4 : 3; sl.scale.set(ss, ss*0.117, 1); scene3d.add(sl);
-    p.x = x; p.z = z; p.mesh = mesh;
-    registerNode(p.id, mesh, { name: p.name, role: p.subtitle, icon: p.icon, status: p.status, statusColor: sColor, desc: p.desc, connections: [] });
-    animatedObjects3d.push({ mesh, baseY: PROJECT_Y, type: 'bob', phase: i * 0.8 });
-  });
 
-  // Agents
+  ];
+  // No projects - clean slate per Alex's request
+
+  // C-Suite Agents (all 9 original roles as per Alex's request)
   const agents = [
-    { id:'bolt', name:'Bolt', role:'CTO — Engineering', color:COLORS.boltBlue, icon:'⚡', desc:'Chief Technology Officer. Primary code builder.', connectedProjects:['klaseco','tailwind','aperture','riftrun','spawnpoint','collectibles'] },
-    { id:'lens', name:'Lens', role:'CRO — Research & Revenue', color:COLORS.lensCyan, icon:'🔍', desc:'Chief Revenue Officer. Data gathering, market research.', connectedProjects:['tailwind','collectibles'] },
-    { id:'relay', name:'Relay', role:'CIO — Infrastructure', color:COLORS.relayPurple, icon:'🔄', desc:'Chief Information Officer. CI/CD, hosting, infrastructure.', connectedProjects:['klaseco','riftrun'] },
-    { id:'echo', name:'Echo', role:'CMO — Marketing & Content', color:COLORS.echoPink, icon:'🎙️', desc:'Chief Marketing Officer. Content, voice synthesis, media.', connectedProjects:['aperture'] },
-    { id:'spark', name:'Spark', role:'CSO — Strategy', color:COLORS.sparkOrange, icon:'💡', desc:'Chief Strategy Officer. High-level planning via Claude/Opus.', connectedProjects:[] },
-    { id:'counsel', name:'Counsel', role:'CLO — Legal', color:COLORS.crimson, icon:'⚖️', desc:'Chief Legal Officer. Regulatory compliance, legal risks.', connectedProjects:['klaseco','tailwind','aperture','riftrun','spawnpoint','collectibles'] },
-    { id:'ledger', name:'Ledger', role:'CFO — Finance', color:COLORS.emerald, icon:'📊', desc:'Chief Financial Officer. Financial planning and budgeting.', connectedProjects:['klaseco','tailwind','spawnpoint'] },
-    { id:'shield', name:'Shield', role:'CISO — Security', color:COLORS.indigo, icon:'🛡️', desc:'Chief Information Security Officer. Security, data protection.', connectedProjects:['klaseco','spawnpoint','tailwind'] },
+    { id:'bolt', name:'Bolt', role:'CTO — Engineering', color:COLORS.boltBlue, icon:'⚡', desc:'Chief Technology Officer. Primary code builder and technical implementation.', connectedProjects:[] },
+    { id:'spark', name:'Spark', role:'CSO — Strategy', color:COLORS.sparkOrange, icon:'💡', desc:'Chief Strategy Officer. High-level planning and strategic direction.', connectedProjects:[] },
+    { id:'echo', name:'Echo', role:'CMO — Marketing & Content', color:COLORS.echoPink, icon:'🎙️', desc:'Chief Marketing Officer. Content creation, voice synthesis, and media.', connectedProjects:[] },
+    { id:'lens', name:'Lens', role:'CRO — Research & Revenue', color:COLORS.lensCyan, icon:'🔍', desc:'Chief Revenue Officer. Market research, data gathering, and revenue opportunities.', connectedProjects:[] },
+    { id:'counsel', name:'Counsel', role:'CLO — Legal', color:COLORS.crimson, icon:'⚖️', desc:'Chief Legal Officer. Regulatory compliance and legal risk assessment.', connectedProjects:[] },
+    { id:'relay', name:'Relay', role:'CIO — Infrastructure', color:COLORS.relayPurple, icon:'🔄', desc:'Chief Information Officer. Infrastructure, CI/CD, and system operations.', connectedProjects:[] },
+    { id:'ledger', name:'Ledger', role:'CFO — Finance', color:COLORS.emerald, icon:'📊', desc:'Chief Financial Officer. Financial planning, budgeting, and cost management.', connectedProjects:[] },
+    { id:'shield', name:'Shield', role:'CISO — Security', color:COLORS.indigo, icon:'🛡️', desc:'Chief Information Security Officer. Security audits and data protection.', connectedProjects:[] },
+    { id:'pixel', name:'Pixel', role:'CDO — Design', color:COLORS.pixelOrange, icon:'🎨', desc:'Chief Design Officer. Visual design, UI/UX, and brand consistency.', connectedProjects:[] },
   ];
   const AGENT_RADIUS = 16, AGENT_Y = -1;
   agents.forEach((a, i) => {
@@ -1044,13 +1024,9 @@ function init3D() {
     return { line, particles, from: from.clone(), to: to.clone() };
   }
 
+  // Organizational structure: Alex → Kiwi → C-Suite (clean slate, no projects)
   connections3d.push(createConnection(new THREE.Vector3(-1,LEADERSHIP_Y_3D,0), new THREE.Vector3(1,LEADERSHIP_Y_3D,0), COLORS.gold, 4));
   agents.forEach(a => { connections3d.push(createConnection(new THREE.Vector3(1,LEADERSHIP_Y_3D,0), new THREE.Vector3(a.x,AGENT_Y,a.z), COLORS.kiwi, 3)); });
-  agents.forEach(a => {
-    a.connectedProjects.forEach(pid => { const proj = projects.find(p=>p.id===pid); if(proj) connections3d.push(createConnection(new THREE.Vector3(a.x,AGENT_Y,a.z), new THREE.Vector3(proj.x,PROJECT_Y,proj.z), a.color, 2)); });
-    if (a.id === 'spark') connections3d.push(createConnection(new THREE.Vector3(a.x,AGENT_Y,a.z), new THREE.Vector3(0,HUB_Y_3D,0), COLORS.sparkOrange, 3));
-  });
-  projects.forEach(p => { systems.forEach(s => { if(s.id==='memory'||s.id==='github') connections3d.push(createConnection(new THREE.Vector3(p.x,PROJECT_Y,p.z), new THREE.Vector3(s.x,s.y,s.z), 0x445566, 1)); }); });
   systems.forEach(s => { connections3d.push(createConnection(new THREE.Vector3(0,HUB_Y_3D,0), new THREE.Vector3(s.x,s.y,s.z), 0x667799, 2)); });
 
   // Interaction
@@ -1167,7 +1143,7 @@ let activeLayers2d, activeWorkflow2d = null;
 
 function init2D() {
   twoInitialized = true;
-  activeLayers2d = new Set(['leadership', 'projects', 'agents', 'systems']);
+  activeLayers2d = new Set(['leadership', 'agents', 'systems']);
 
   if (isMobile) {
     document.getElementById('legend-2d').classList.add('collapsed');
@@ -1180,52 +1156,43 @@ function init2D() {
   function colX(i) { return COL_START + i * COL_SPACING; }
 
   const nodes2d = [
+    // Systems
     { id:'memory', label:'Memory System', role:'MEMORY.md + Daily Notes', emoji:'🧠', layer:'systems', color:'#6B7280', x:colX(0.5), y:SYS_Y, detail:{description:'Persistent memory system.',components:['MEMORY.md','memory/*.md','2am cron','3am cron']}},
     { id:'comms', label:'Communication', role:'Telegram, Discord', emoji:'💬', layer:'systems', color:'#6B7280', x:colX(1.5), y:SYS_Y, detail:{description:'Communication channels.',components:['Telegram (primary)','Discord (Klase HQ)']}},
     { id:'infra', label:'Infrastructure', role:'Mac mini, OpenClaw, Vercel', emoji:'🖥️', layer:'systems', color:'#6B7280', x:colX(2.5), y:SYS_Y, detail:{description:'Core infrastructure.',components:['Mac mini','OpenClaw','Vercel','GitHub']}},
     { id:'tools', label:'Tools', role:'Airtable, ElevenLabs, GitHub', emoji:'🔧', layer:'systems', color:'#6B7280', x:colX(3.5), y:SYS_Y, detail:{description:'External tools and services.',components:['Airtable','ElevenLabs','GitHub','Stripe (future)']}},
     { id:'distribution', label:'Distribution', role:'YouTube, TikTok, X, etc.', emoji:'📡', layer:'systems', color:'#6B7280', x:colX(4.5), y:SYS_Y, detail:{description:'Content distribution channels.',components:['YouTube','TikTok','Instagram','X','Reddit']}},
+    
+    // Leadership
     { id:'alex', label:'Alex', role:'Founder & CEO', emoji:'👑', layer:'leadership', color:'#FFD700', x:colX(2.5), y:LEADERSHIP_Y_TOP, detail:{description:'Founder & CEO. Strategic vision, final approvals.',connections:['Kiwi Klase (COO)'],status:'Active'}},
-    { id:'kiwi', label:'Kiwi Klase', role:'Chief of Staff / COO', emoji:'🥝', layer:'leadership', color:'#4CAF50', x:colX(2.5), y:LEADERSHIP_Y_BOT, detail:{description:'AI Chief of Staff / COO. Planning, coordination, execution.',connections:['All projects','All sub-agents','All systems'],status:'Active'}},
-    { id:'spark', label:'Spark', role:'CSO — Strategy & Planning', emoji:'✨', layer:'agents', color:'#F59E0B', x:colX(4.5), y:CSUITE_Y_BOT, detail:{description:'Chief Strategy Officer.',projects:['Cross-Project'],department:'Strategy',capabilities:['Strategic planning','PRD authoring','Decision frameworks']}},
-    { id:'counsel', label:'Counsel', role:'CLO — Legal', emoji:'⚖️', layer:'agents', color:'#DC2626', x:colX(0.5), y:CSUITE_Y_BOT, detail:{description:'Chief Legal Officer.',projects:['Cross-Project'],department:'Legal',capabilities:['Regulatory compliance','Disclaimer drafting','IP review']}},
-    { id:'ledger', label:'Ledger', role:'CFO — Finance', emoji:'📊', layer:'agents', color:'#10B981', x:colX(0.5), y:CSUITE_Y_TOP, detail:{description:'Chief Financial Officer.',projects:['KlaseCo.com','TAILWIND','SpawnPoint'],department:'Finance',capabilities:['Financial planning','Budget management']}},
-    { id:'shield', label:'Shield', role:'CISO — Security', emoji:'🛡️', layer:'agents', color:'#6366F1', x:colX(4.5), y:CSUITE_Y_TOP, detail:{description:'Chief Information Security Officer.',projects:['KlaseCo.com','SpawnPoint','TAILWIND'],department:'Security',capabilities:['Security audits','Threat assessment']}},
-    { id:'echo', label:'Echo', role:'CMO — Marketing & Content', emoji:'📢', layer:'agents', color:'#EC4899', x:colX(3.5), y:CSUITE_Y_BOT, detail:{description:'Chief Marketing Officer.',projects:['Aperture AI'],department:'Marketing',capabilities:['Script writing','ElevenLabs TTS']}},
-    { id:'bolt', label:'Bolt', role:'CTO — Engineering', emoji:'⚡', layer:'agents', color:'#3B82F6', x:colX(1.5), y:CSUITE_Y_TOP, detail:{description:'Chief Technology Officer.',projects:['All projects'],department:'Engineering',capabilities:['Full-stack dev','API integration']}},
-    { id:'lens', label:'Lens', role:'CRO — Research & Revenue', emoji:'🔍', layer:'agents', color:'#06B6D4', x:colX(3.5), y:CSUITE_Y_TOP, detail:{description:'Chief Revenue Officer.',projects:['TAILWIND','Collectibles Intel'],department:'Research',capabilities:['Market research','Data analysis']}},
-    { id:'relay', label:'Relay', role:'CIO — Infrastructure', emoji:'🔄', layer:'agents', color:'#8B5CF6', x:colX(1.5), y:CSUITE_Y_BOT, detail:{description:'Chief Information Officer.',projects:['KlaseCo.com','Rift Run'],department:'Infrastructure',capabilities:['Vercel deployment','DNS','CI/CD']}},
-    { id:'klaseco', label:'KlaseCo.com', role:'Public Journey Site', emoji:'🌐', layer:'projects', color:'#2D9C4A', badge:'🟢 Building', x:colX(0), y:PROJ_Y, detail:{description:'Public-facing website.',status:'Building',tech:'Next.js, Vercel',agents:['Bolt','Relay','Counsel','Ledger','Shield']}},
-    { id:'tailwind', label:'TAILWIND', role:'Polymarket Copy-Trading', emoji:'📊', layer:'projects', color:'#E8A317', badge:'🟡 Pivot', x:colX(1), y:PROJ_Y, detail:{description:'Copy-trading for Polymarket.',status:'Pivot',tech:'Python, APIs',agents:['Lens','Bolt','Counsel','Ledger','Shield']}},
-    { id:'aperture', label:'Aperture AI', role:'Faceless Content Studio', emoji:'🎬', layer:'projects', color:'#E8A317', badge:'🟡 Planning', x:colX(2), y:PROJ_Y, detail:{description:'AI-powered faceless content.',status:'Planning',tech:'ElevenLabs, Video AI',agents:['Echo','Bolt','Counsel']}},
-    { id:'riftrun', label:'Rift Run', role:'Browser Game', emoji:'🎮', layer:'projects', color:'#E8A317', badge:'🟡 Built', x:colX(3), y:PROJ_Y, detail:{description:'Browser-based game.',status:'Built, Needs Distribution',tech:'JavaScript, HTML5',agents:['Bolt','Relay','Counsel']}},
-    { id:'spawnpoint', label:'SpawnPoint', role:'AI Agent Identity Platform', emoji:'🧬', layer:'projects', color:'#3B82F6', badge:'🔵 Future', x:colX(4), y:PROJ_Y, detail:{description:'AI agent identity platform.',status:'Future',tech:'TBD',agents:['Bolt','Counsel','Ledger','Shield']}},
-    { id:'collectibles', label:'Collectibles Intel', role:'Price Intelligence', emoji:'💎', layer:'projects', color:'#3B82F6', badge:'🔵 Future', x:colX(5), y:PROJ_Y, detail:{description:'Price intelligence for collectibles.',status:'Future',tech:'Python, Scrapers',agents:['Lens','Counsel']}},
+    { id:'kiwi', label:'Kiwi Klase', role:'Chief of Staff / COO', emoji:'🥝', layer:'leadership', color:'#4CAF50', x:colX(2.5), y:LEADERSHIP_Y_BOT, detail:{description:'AI Chief of Staff / COO. Managing all 9 C-Suite agents.',connections:['All C-Suite agents','All systems'],status:'Active'}},
+    
+    // C-Suite (all 9 agents, no project connections)
+    { id:'bolt', label:'Bolt', role:'CTO — Engineering', emoji:'⚡', layer:'agents', color:'#3B82F6', x:colX(1), y:CSUITE_Y_TOP, detail:{description:'Chief Technology Officer. Technical implementation and development.',department:'Engineering',capabilities:['Full-stack development','API integration','Code architecture']}},
+    { id:'spark', label:'Spark', role:'CSO — Strategy', emoji:'💡', layer:'agents', color:'#F59E0B', x:colX(2), y:CSUITE_Y_TOP, detail:{description:'Chief Strategy Officer. High-level planning and strategic direction.',department:'Strategy',capabilities:['Strategic planning','PRD authoring','Decision frameworks']}},
+    { id:'echo', label:'Echo', role:'CMO — Marketing & Content', emoji:'🎙️', layer:'agents', color:'#EC4899', x:colX(3), y:CSUITE_Y_TOP, detail:{description:'Chief Marketing Officer. Content creation and marketing.',department:'Marketing',capabilities:['Script writing','ElevenLabs TTS','Content strategy']}},
+    { id:'lens', label:'Lens', role:'CRO — Research & Revenue', emoji:'🔍', layer:'agents', color:'#06B6D4', x:colX(4), y:CSUITE_Y_TOP, detail:{description:'Chief Revenue Officer. Market research and revenue opportunities.',department:'Research',capabilities:['Market research','Data analysis','Revenue optimization']}},
+    { id:'pixel', label:'Pixel', role:'CDO — Design', emoji:'🎨', layer:'agents', color:'#FF6B35', x:colX(5), y:CSUITE_Y_TOP, detail:{description:'Chief Design Officer. Visual design and user experience.',department:'Design',capabilities:['UI/UX design','Brand consistency','Visual identity']}},
+    { id:'counsel', label:'Counsel', role:'CLO — Legal', emoji:'⚖️', layer:'agents', color:'#DC2626', x:colX(1), y:CSUITE_Y_BOT, detail:{description:'Chief Legal Officer. Legal compliance and risk assessment.',department:'Legal',capabilities:['Regulatory compliance','Legal review','Risk assessment']}},
+    { id:'relay', label:'Relay', role:'CIO — Infrastructure', emoji:'🔄', layer:'agents', color:'#8B5CF6', x:colX(2), y:CSUITE_Y_BOT, detail:{description:'Chief Information Officer. Infrastructure and operations.',department:'Infrastructure',capabilities:['Vercel deployment','DNS management','CI/CD']}},
+    { id:'ledger', label:'Ledger', role:'CFO — Finance', emoji:'📊', layer:'agents', color:'#10B981', x:colX(3), y:CSUITE_Y_BOT, detail:{description:'Chief Financial Officer. Financial planning and management.',department:'Finance',capabilities:['Financial planning','Budget management','Cost optimization']}},
+    { id:'shield', label:'Shield', role:'CISO — Security', emoji:'🛡️', layer:'agents', color:'#6366F1', x:colX(4), y:CSUITE_Y_BOT, detail:{description:'Chief Information Security Officer. Security and protection.',department:'Security',capabilities:['Security audits','Threat assessment','Data protection']}},
   ];
 
   const links2d = [
+    // Organizational structure: Alex → Kiwi → All C-Suite
     {source:'alex',target:'kiwi',type:'command',label:'Telegram'},
     {source:'kiwi',target:'bolt',type:'delegation',label:'Engineering'},
     {source:'kiwi',target:'spark',type:'delegation',label:'Strategy'},
-    {source:'kiwi',target:'echo',type:'delegation',label:'Content'},
+    {source:'kiwi',target:'echo',type:'delegation',label:'Marketing'},
     {source:'kiwi',target:'lens',type:'delegation',label:'Research'},
-    {source:'kiwi',target:'relay',type:'delegation',label:'Infra'},
+    {source:'kiwi',target:'pixel',type:'delegation',label:'Design'},
     {source:'kiwi',target:'counsel',type:'delegation',label:'Legal'},
+    {source:'kiwi',target:'relay',type:'delegation',label:'Infrastructure'},
     {source:'kiwi',target:'ledger',type:'delegation',label:'Finance'},
     {source:'kiwi',target:'shield',type:'delegation',label:'Security'},
-    {source:'bolt',target:'klaseco',type:'data'},{source:'bolt',target:'tailwind',type:'data'},
-    {source:'bolt',target:'aperture',type:'data'},{source:'bolt',target:'riftrun',type:'data'},
-    {source:'bolt',target:'spawnpoint',type:'data'},{source:'bolt',target:'collectibles',type:'data'},
-    {source:'relay',target:'klaseco',type:'data'},{source:'relay',target:'riftrun',type:'data'},
-    {source:'lens',target:'tailwind',type:'data'},{source:'lens',target:'collectibles',type:'data'},
-    {source:'echo',target:'aperture',type:'data'},
-    {source:'counsel',target:'klaseco',type:'legal'},{source:'counsel',target:'tailwind',type:'legal'},
-    {source:'counsel',target:'aperture',type:'legal'},{source:'counsel',target:'riftrun',type:'legal'},
-    {source:'counsel',target:'spawnpoint',type:'legal'},{source:'counsel',target:'collectibles',type:'legal'},
-    {source:'ledger',target:'klaseco',type:'data'},{source:'ledger',target:'tailwind',type:'data'},
-    {source:'ledger',target:'spawnpoint',type:'data'},
-    {source:'shield',target:'klaseco',type:'data'},{source:'shield',target:'spawnpoint',type:'data'},
-    {source:'shield',target:'tailwind',type:'data'},
+    
+    // System connections
     {source:'kiwi',target:'memory',type:'system'},{source:'kiwi',target:'comms',type:'system'},
     {source:'kiwi',target:'infra',type:'system'},{source:'echo',target:'distribution',type:'system'},
     {source:'echo',target:'tools',type:'system'},{source:'memory',target:'infra',type:'system'},

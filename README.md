@@ -1,32 +1,41 @@
-# KlaseCo Mission Control — 3D Visualization
+# Mission Control — Simplified Focus Dashboard
 
-Interactive 3D command center dashboard for KlaseCo operations.
+## Current Version: Simplified Dashboard (simplified.html)
 
-## What It Shows
+**Streamlined focus dashboard** for the new 2-project strategy.
 
-- **Command Center Hub** — Alex (Founder) and Kiwi (Chief of Staff) at the center
-- **6 Project Nodes** — orbiting the hub with status color coding (green/yellow/blue)
-- **5 Sub-Agent Stations** — Bolt, Lens, Relay, Echo, Spark with connections to their projects
-- **Systems Layer** — Memory, Approval Queue, GitHub, Discord
-- **Animated Connections** — particle-based data flow lines between all elements
+### What It Shows
 
-## How to Open
+- **2 Active Projects** — Revenue Sprint (primary) + KlaseCo.com (support)
+- **Flat Team Structure** — 6 equal team members, no hierarchy
+- **Archived Projects** — 5 projects paused for focus
+- **Clear Metrics** — Revenue targets and completion status
 
-Just open `index.html` in any modern browser:
+### How to Open
 
 ```bash
+# Recommended: Simplified version
+open simplified.html
+```
+
+## Legacy Version: 3D Complex Dashboard (index.html)
+
+The original complex 3D visualization with 6 projects and hierarchical C-Suite structure. 
+
+**Features:** 3D visualization, complex agent hierarchy, 6 project tracking, animated connections.
+**Status:** Archived — too complex for current focus strategy.
+
+```bash
+# Legacy version (complex)
 open index.html
 ```
 
-Or:
-```bash
-# macOS
-open /Users/kiwi/.openclaw/workspace/projects/mission-control/index.html
+## Strategic Change
 
-# Or just double-click the file in Finder
-```
+**Before:** 6 projects + 8-agent C-Suite hierarchy + complex 3D visualization
+**After:** 2 projects + 6-agent flat team + simple focus dashboard
 
-No build step, no dependencies to install. Three.js loads from CDN.
+Focus wins. Ship Revenue Sprint first.
 
 ## Controls
 
