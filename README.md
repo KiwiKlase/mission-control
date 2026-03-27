@@ -1,41 +1,47 @@
-# Mission Control — Simplified Focus Dashboard
+# Mission Control — Clean Slate Dashboard
 
-## Current Version: Simplified Dashboard (simplified.html)
+## Current Version: Clean Slate (index.html)
 
-**Streamlined focus dashboard** for the new 2-project strategy.
+**Clean organizational dashboard** with no active projects.
 
 ### What It Shows
 
-- **2 Active Projects** — Revenue Sprint (primary) + KlaseCo.com (support)
-- **Flat Team Structure** — 6 equal team members, no hierarchy
-- **Archived Projects** — 5 projects paused for focus
-- **Clear Metrics** — Revenue targets and completion status
+- **Organizational Structure** — Alex → Kiwi → 9 C-Suite agents
+- **Clean Slate Status** — All projects removed, ready for new initiatives
+- **Clear Hierarchy** — CEO → COO → 9 specialized C-Suite roles
 
 ### How to Open
 
 ```bash
-# Recommended: Simplified version
-open simplified.html
-```
-
-## Legacy Version: 3D Complex Dashboard (index.html)
-
-The original complex 3D visualization with 6 projects and hierarchical C-Suite structure. 
-
-**Features:** 3D visualization, complex agent hierarchy, 6 project tracking, animated connections.
-**Status:** Archived — too complex for current focus strategy.
-
-```bash
-# Legacy version (complex)
+# Current clean slate version
 open index.html
 ```
 
+Live URL: https://kiwiklase.github.io/mission-control/
+
+## Organizational Structure
+
+**Alex** (Founder & CEO)  
+↓  
+**Kiwi Klase** (Chief of Staff / COO)  
+↓  
+**9 C-Suite Agents:**
+- ⚡ Bolt (CTO) — Engineering
+- 💡 Spark (CSO) — Strategy  
+- 🎙️ Echo (CMO) — Marketing
+- 🔍 Lens (CRO) — Revenue
+- 🎨 Pixel (CDO) — Design
+- ⚖️ Counsel (CLO) — Legal
+- 🔄 Relay (CIO) — Infrastructure
+- 📊 Ledger (CFO) — Finance
+- 🛡️ Shield (CISO) — Security
+
 ## Strategic Change
 
-**Before:** 6 projects + 8-agent C-Suite hierarchy + complex 3D visualization
-**After:** 2 projects + 6-agent flat team + simple focus dashboard
+**Before:** Multiple projects + complex 3D visualization + scattered focus
+**After:** Clean slate + clear hierarchy + ready to build
 
-Focus wins. Ship Revenue Sprint first.
+Ready for new projects when defined.
 
 ## Controls
 
