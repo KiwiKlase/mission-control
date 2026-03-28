@@ -3,221 +3,2888 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control — Clean Slate</title>
+<title>Mission Control — The Vektor Corporation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    color: #e0e0f0;
-  }
+/* ══════════════════════════════════════════
+   MISSION CONTROL v3 — THE VEKTOR CORPORATION
+   Dark Mode • Kiwi Green • Full Interactivity
+   ══════════════════════════════════════════ */
 
-  .header {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-    background: rgba(10,10,26,0.95); backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 24px; height: 64px;
-  }
-  
-  .header h1 {
-    font-size: 20px; font-weight: 700; color: #FFD700;
-    letter-spacing: 1px;
-  }
-  
-  .header .subtitle {
-    font-size: 14px; color: rgba(255,255,255,0.6);
-    font-weight: 400;
-  }
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-tertiary: #16161f;
+  --bg-card: rgba(22, 22, 31, 0.8);
+  --bg-hover: rgba(30, 30, 42, 0.9);
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text-primary: #f0f0f5;
+  --text-secondary: rgba(240,240,245,0.6);
+  --text-tertiary: rgba(240,240,245,0.4);
+  --kiwi: #4ade80;
+  --kiwi-dim: rgba(74,222,128,0.15);
+  --kiwi-glow: rgba(74,222,128,0.3);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.15);
+  --amber: #fbbf24;
+  --amber-dim: rgba(251,191,36,0.15);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.15);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.15);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.15);
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  .main {
-    position: absolute; top: 64px; left: 0; right: 0; bottom: 0;
-    display: flex; flex-direction: column; padding: 24px;
-    gap: 24px; overflow-y: auto;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
 
-  .focus-section {
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; padding: 24px;
-  }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
 
-  .focus-title {
-    font-size: 18px; font-weight: 700; margin-bottom: 16px;
-    color: #4CAF50;
-  }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
-  .org-structure {
-    text-align: center;
-  }
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; }
 
-  .leadership-level {
-    background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2);
-    border-radius: 12px; padding: 16px; margin: 16px auto; max-width: 300px;
-  }
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
 
-  .leadership-person {
-    font-size: 16px; font-weight: 600;
-  }
+.sidebar-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
 
-  .leadership-role {
-    font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px;
-  }
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
 
-  .arrow {
-    font-size: 24px; color: rgba(255,255,255,0.4); margin: 8px 0;
-  }
+.sidebar-logo .logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--kiwi), #22c55e);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #000;
+}
 
-  .team-section {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px; margin-top: 16px;
-  }
+.sidebar-logo .logo-text {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
 
-  .team-member {
-    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px; padding: 16px; text-align: center;
-    border-left: 3px solid;
-  }
+.sidebar-logo .logo-sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  margin-top: 1px;
+}
 
-  .team-avatar {
-    font-size: 28px; margin-bottom: 8px;
-  }
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
 
-  .team-name {
-    font-size: 14px; font-weight: 600; margin-bottom: 4px;
-  }
+.nav-section { margin-bottom: 4px; }
 
-  .team-role {
-    font-size: 11px; color: rgba(255,255,255,0.6);
-    line-height: 1.3;
-  }
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  padding: 12px 10px 6px;
+}
 
-  .clean-slate {
-    text-align: center; padding: 40px 20px;
-  }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  position: relative;
+}
 
-  .clean-slate-icon {
-    font-size: 48px; margin-bottom: 16px;
-  }
+.nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.nav-item.active { background: var(--kiwi-dim); color: var(--kiwi); }
 
-  .clean-slate h3 {
-    font-size: 20px; font-weight: 700; margin-bottom: 12px;
-    color: #4CAF50;
-  }
+.nav-item .nav-icon { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
 
-  .clean-slate p {
-    font-size: 14px; color: rgba(255,255,255,0.7);
-    line-height: 1.5; max-width: 500px; margin: 0 auto;
-  }
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--kiwi-dim);
+  color: var(--kiwi);
+}
 
-  @media (max-width: 768px) {
-    .team-section { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-    .main { padding: 16px; gap: 16px; }
-    .focus-section { padding: 16px; }
-  }
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.sidebar-footer:hover { background: var(--bg-hover); }
+
+.sidebar-footer .avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--kiwi), #22c55e);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+
+.sidebar-footer .user-info { flex: 1; }
+.sidebar-footer .user-name { font-size: 12px; font-weight: 600; }
+.sidebar-footer .user-role { font-size: 10px; color: var(--text-tertiary); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.main-header {
+  height: var(--header-height);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+}
+
+.main-header .page-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+
+.main-header .header-actions { display: flex; align-items: center; gap: 8px; }
+
+.header-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+
+.header-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-hover); }
+.header-btn.primary { background: var(--kiwi); color: #000; border-color: transparent; font-weight: 600; }
+.header-btn.primary:hover { background: #5eead4; }
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.main-content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.2s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  transition: border-color var(--transition);
+}
+
+.card:hover { border-color: var(--border-hover); }
+.card.clickable { cursor: pointer; }
+.card.clickable:hover { border-color: var(--kiwi); transform: translateY(-1px); transition: all var(--transition); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-action {
+  font-size: 11px;
+  color: var(--kiwi);
+  cursor: pointer;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: background var(--transition);
+}
+
+.card-action:hover { background: var(--kiwi-dim); }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── STAT CARDS ── */
+.stat-value { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
+
+.stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.stat-change.up { color: var(--kiwi); }
+.stat-change.down { color: var(--red); }
+
+/* ── STATUS INDICATORS ── */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.green { background: var(--kiwi); box-shadow: 0 0 6px var(--kiwi-glow); }
+.status-dot.amber { background: var(--amber); }
+.status-dot.red { background: var(--red); }
+.status-dot.blue { background: var(--blue); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge.green { background: var(--kiwi-dim); color: var(--kiwi); }
+.badge.amber { background: var(--amber-dim); color: var(--amber); }
+.badge.red { background: var(--red-dim); color: var(--red); }
+.badge.blue { background: var(--blue-dim); color: var(--blue); }
+.badge.purple { background: var(--purple-dim); color: var(--purple); }
+.badge.cyan { background: var(--cyan-dim); color: var(--cyan); }
+.badge.muted { background: rgba(255,255,255,0.05); color: var(--text-tertiary); }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+
+th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+tr:last-child td { border-bottom: none; }
+tr.clickable-row { cursor: pointer; transition: background var(--transition); }
+tr.clickable-row:hover td { background: rgba(74,222,128,0.05); }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.progress-fill.green { background: var(--kiwi); }
+.progress-fill.blue { background: var(--blue); }
+.progress-fill.amber { background: var(--amber); }
+.progress-fill.purple { background: var(--purple); }
+
+/* ── FEED ITEMS ── */
+.feed-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: var(--radius-sm);
+}
+
+.feed-item:hover { background: rgba(255,255,255,0.02); }
+.feed-item:last-child { border-bottom: none; }
+
+.feed-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.feed-content { flex: 1; min-width: 0; }
+.feed-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.feed-meta { font-size: 11px; color: var(--text-tertiary); }
+
+/* ── ORG CHART ── */
+.org-chart { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 32px 16px; }
+.org-level { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.org-connector { width: 2px; height: 24px; background: var(--border); margin: 0 auto; }
+
+.org-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  text-align: center;
+  min-width: 140px;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.org-card:hover { border-color: var(--kiwi); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(74,222,128,0.1); }
+.org-card .org-emoji { font-size: 24px; margin-bottom: 8px; }
+.org-card .org-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.org-card .org-role { font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; }
+.org-card .org-status { font-size: 11px; font-weight: 500; }
+.org-card.ceo { border-color: var(--amber); }
+.org-card.coo { border-color: var(--kiwi); }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 2px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+
+.tab {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  margin-bottom: -1px;
+}
+
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--kiwi); border-bottom-color: var(--kiwi); }
+
+/* ── LOG ENTRIES ── */
+.log-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.log-time { color: var(--text-tertiary); flex-shrink: 0; min-width: 72px; }
+.log-level { flex-shrink: 0; font-weight: 600; min-width: 44px; }
+.log-level.info { color: var(--blue); }
+.log-level.ok { color: var(--kiwi); }
+.log-level.warn { color: var(--amber); }
+.log-level.error { color: var(--red); }
+.log-msg { color: var(--text-secondary); word-break: break-all; }
+
+/* ── SEARCH ── */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+}
+
+.search-box input::placeholder { color: var(--text-tertiary); }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.section-subtitle { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
+
+/* ── QUICK ACTIONS ── */
+.quick-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.quick-action:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--kiwi); }
+
+/* ── TICKERS ── */
+.ticker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ticker-row:last-child { border-bottom: none; }
+.ticker-symbol { font-size: 13px; font-weight: 700; }
+.ticker-price { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ticker-change { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ── SETTINGS ── */
+.settings-group { margin-bottom: 24px; }
+.settings-group-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: background var(--transition);
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
+}
+
+.setting-row:hover { background: rgba(255,255,255,0.02); }
+.setting-label { font-size: 13px; font-weight: 500; }
+.setting-desc { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.setting-value { font-size: 13px; color: var(--text-secondary); font-family: 'SF Mono', monospace; }
+
+/* Toggle switch */
+.toggle {
+  width: 36px; height: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.toggle.on { background: var(--kiwi); }
+
+.toggle::after {
+  content: '';
+  width: 16px; height: 16px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px; left: 2px;
+  transition: transform var(--transition);
+}
+
+.toggle.on::after { transform: translateX(16px); }
+
+/* ── KB ── */
+.kb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.kb-item:hover { border-color: var(--kiwi); background: var(--bg-hover); }
+.kb-icon { font-size: 20px; flex-shrink: 0; }
+.kb-info { flex: 1; }
+.kb-title-text { font-size: 13px; font-weight: 600; }
+.kb-desc { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.kb-date { font-size: 11px; color: var(--text-tertiary); }
+
+/* ── CONTACTS ── */
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.contact-card:hover { border-color: var(--kiwi); transform: translateY(-1px); }
+
+.contact-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.contact-info { flex: 1; }
+.contact-name { font-size: 14px; font-weight: 600; }
+.contact-role { font-size: 12px; color: var(--text-tertiary); }
+.contact-tags { display: flex; gap: 4px; margin-top: 6px; }
+
+/* ── VENTURES ── */
+.venture-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.venture-card:hover { border-color: var(--kiwi); transform: translateY(-1px); }
+.venture-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.venture-icon { font-size: 28px; }
+.venture-name { font-size: 16px; font-weight: 700; }
+.venture-desc { font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px; line-height: 1.5; }
+
+/* ── INTEL ── */
+.intel-item { padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: background var(--transition); margin: 0 -8px; padding-left: 8px; padding-right: 8px; border-radius: var(--radius-sm); }
+.intel-item:hover { background: rgba(255,255,255,0.02); }
+.intel-item:last-child { border-bottom: none; }
+.intel-source { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.intel-headline { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.4; }
+.intel-summary { font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+.intel-time { font-size: 10px; color: var(--text-tertiary); margin-top: 6px; }
+
+/* ═══════════════════════════════════
+   MODAL SYSTEM — Detail/Edit Views
+   ═══════════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: modalSlide 0.2s ease;
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 1;
+}
+
+.modal-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+
+.modal-close {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all var(--transition);
+}
+
+.modal-close:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-hover); }
+
+.modal-body { padding: 24px; }
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Modal form elements */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--kiwi); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select { cursor: pointer; }
+.form-select option { background: var(--bg-secondary); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.modal-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.modal-detail-label { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
+.modal-detail-value { font-size: 13px; font-weight: 500; text-align: right; max-width: 60%; }
+
+/* Action buttons in modals */
+.action-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-hover); }
+.action-btn.primary { background: var(--kiwi); color: #000; border-color: transparent; }
+.action-btn.primary:hover { background: #5eead4; }
+.action-btn.danger { color: var(--red); }
+.action-btn.danger:hover { background: var(--red-dim); border-color: var(--red); }
+
+/* ═══════════════════════════════════
+   CHAT BUBBLE — Direct Kiwi Connection
+   ═══════════════════════════════════ */
+.chat-bubble {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1500;
+}
+
+.chat-toggle {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--kiwi), #22c55e);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 20px rgba(74,222,128,0.3);
+  transition: all var(--transition);
+  position: relative;
+}
+
+.chat-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(74,222,128,0.4); }
+.chat-toggle.has-badge::after {
+  content: '';
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 12px; height: 12px;
+  background: var(--red);
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+}
+
+.chat-panel {
+  display: none;
+  position: absolute;
+  bottom: 68px;
+  right: 0;
+  width: 380px;
+  height: 500px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  flex-direction: column;
+}
+
+.chat-panel.open { display: flex; animation: modalSlide 0.2s ease; }
+
+.chat-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-tertiary);
+}
+
+.chat-header-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--kiwi), #22c55e);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.chat-header-info { flex: 1; }
+.chat-header-name { font-size: 14px; font-weight: 700; }
+.chat-header-status { font-size: 11px; color: var(--kiwi); display: flex; align-items: center; gap: 4px; }
+.chat-header-status::before { content: ''; width: 6px; height: 6px; background: var(--kiwi); border-radius: 50%; }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.chat-msg.from-kiwi {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg.from-user {
+  background: var(--kiwi);
+  color: #000;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg-time {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.chat-msg.from-user .chat-msg-time { color: rgba(0,0,0,0.5); }
+
+.chat-input-area {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  max-height: 100px;
+  min-height: 40px;
+  line-height: 1.4;
+}
+
+.chat-input:focus { border-color: var(--kiwi); }
+.chat-input::placeholder { color: var(--text-tertiary); }
+
+.chat-send {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--kiwi);
+  border: none;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.chat-send:hover { background: #5eead4; transform: scale(1.05); }
+
+/* ── COMMAND PALETTE ── */
+.cmd-palette {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 3000;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+.cmd-palette.show { display: flex; }
+
+.cmd-box {
+  width: 560px;
+  max-height: 400px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: modalSlide 0.15s ease;
+}
+
+.cmd-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cmd-input-wrap span { font-size: 18px; color: var(--text-tertiary); }
+
+.cmd-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+
+.cmd-input::placeholder { color: var(--text-tertiary); }
+
+.cmd-results {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.cmd-item:hover, .cmd-item.selected { background: var(--kiwi-dim); }
+.cmd-item .cmd-icon { font-size: 16px; width: 24px; text-align: center; }
+.cmd-item .cmd-label { font-size: 13px; font-weight: 500; flex: 1; }
+.cmd-item .cmd-hint { font-size: 11px; color: var(--text-tertiary); }
+
+/* ── TOAST NOTIFICATIONS ── */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  padding: 12px 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  animation: toastIn 0.3s ease;
+  min-width: 240px;
+}
+
+.toast.success { border-color: var(--kiwi); }
+.toast.error { border-color: var(--red); }
+.toast.info { border-color: var(--blue); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── ADD BUTTON ── */
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: var(--kiwi);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+
+.add-btn:hover { background: #5eead4; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); z-index: 1000; }
+  .sidebar.open { transform: translateX(0); }
+  .mobile-menu-btn { display: block; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .main-content { padding: 16px; }
+  .org-level { flex-direction: column; align-items: center; }
+  .chat-panel { width: calc(100vw - 48px); right: -12px; }
+}
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+.sidebar-overlay.show { display: block; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 2s infinite; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div>
-    <h1>Mission Control</h1>
-    <div class="subtitle">Clean Slate — Ready for New Projects</div>
-  </div>
-  <div style="font-size: 14px; color: rgba(255,255,255,0.5);">
-    Updated: March 27, 2026
+<div class="app">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ══════ SIDEBAR ══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo" onclick="navigateTo('dashboard')">
+        <div class="logo-icon">🥝</div>
+        <div>
+          <div class="logo-text">Vektor</div>
+          <div class="logo-sub">Mission Control</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Core</div>
+        <div class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-page="projects">
+          <span class="nav-icon">📁</span> Projects
+          <span class="nav-badge">2</span>
+        </div>
+        <div class="nav-item" data-page="ventures">
+          <span class="nav-icon">🚀</span> Ventures
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">People</div>
+        <div class="nav-item" data-page="team">
+          <span class="nav-icon">🏢</span> Team
+          <span class="nav-badge">11</span>
+        </div>
+        <div class="nav-item" data-page="contacts">
+          <span class="nav-icon">📇</span> Contacts
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Operations</div>
+        <div class="nav-item" data-page="operations">
+          <span class="nav-icon">⚙️</span> Operations
+        </div>
+        <div class="nav-item" data-page="research">
+          <span class="nav-icon">🔍</span> Research
+        </div>
+        <div class="nav-item" data-page="finances">
+          <span class="nav-icon">💰</span> Finances
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Resources</div>
+        <div class="nav-item" data-page="knowledge">
+          <span class="nav-icon">📚</span> Knowledge
+        </div>
+        <div class="nav-item" data-page="settings">
+          <span class="nav-icon">🔧</span> Settings
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer" onclick="toggleChat()">
+      <div class="avatar">🥝</div>
+      <div class="user-info">
+        <div class="user-name">Kiwi Klase</div>
+        <div class="user-role">COO • Online</div>
+      </div>
+      <span style="font-size:10px;color:var(--kiwi)">💬</span>
+    </div>
+  </aside>
+
+  <!-- ══════ MAIN ══════ -->
+  <main class="main">
+    <header class="main-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <div>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" onclick="openCmdPalette()" title="⌘K">⌘K Search</button>
+        <button class="header-btn" onclick="location.reload()">↻ Refresh</button>
+        <span style="font-size:11px;color:var(--text-tertiary)" id="clockDisplay"></span>
+      </div>
+    </header>
+
+    <div class="main-content">
+
+      <!-- ════════════════════════════════════════════
+           PAGE: DASHBOARD
+           ════════════════════════════════════════════ -->
+      <div class="page active" id="page-dashboard">
+        <div class="grid-4" style="margin-bottom:20px">
+          <div class="card clickable" onclick="navigateTo('projects')">
+            <div class="stat-label">Active Projects</div>
+            <div class="stat-value" style="color:var(--kiwi)">2</div>
+            <div class="stat-change up">Click to view →</div>
+          </div>
+          <div class="card clickable" onclick="navigateTo('team')">
+            <div class="stat-label">Team Members</div>
+            <div class="stat-value">11</div>
+            <div class="stat-change" style="color:var(--text-tertiary)">2 human + 9 agents →</div>
+          </div>
+          <div class="card">
+            <div class="stat-label">Days Running</div>
+            <div class="stat-value" style="color:var(--amber)" id="daysRunning">7</div>
+            <div class="stat-change" style="color:var(--text-tertiary)">Since Mar 22, 2026</div>
+          </div>
+          <div class="card clickable" onclick="navigateTo('finances')">
+            <div class="stat-label">Monthly Spend</div>
+            <div class="stat-value">$200</div>
+            <div class="stat-change" style="color:var(--text-tertiary)">View finances →</div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:20px">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📅 Today — <span id="todayDate">Sat, Mar 28</span></span>
+              <span class="card-action" onclick="openModal('addEvent')">+ Event</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px;border-radius:6px;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="openModal('eventDetail', {title:'Basketball',time:'5:30 PM – 7:30 PM',type:'recurring'})">
+                <div style="width:3px;height:32px;background:var(--blue);border-radius:2px"></div>
+                <div>
+                  <div style="font-size:13px;font-weight:500">🏀 Basketball</div>
+                  <div style="font-size:11px;color:var(--text-tertiary)">5:30 PM – 7:30 PM</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:4px">
+                <div style="width:3px;height:32px;background:var(--kiwi);border-radius:2px"></div>
+                <div>
+                  <div style="font-size:13px;font-weight:500">Weekend — No office</div>
+                  <div style="font-size:11px;color:var(--text-tertiary)">Available for side builds</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📈 Market Snapshot</span>
+              <span class="card-action" id="marketRefreshBtn" onclick="refreshMarket()">Live</span>
+            </div>
+            <div id="marketTickers">
+              <div class="ticker-row">
+                <span class="ticker-symbol">S&P 500</span>
+                <span class="ticker-price" id="sp500Price">—</span>
+                <span class="ticker-change" id="sp500Change">—</span>
+              </div>
+              <div class="ticker-row">
+                <span class="ticker-symbol">NASDAQ</span>
+                <span class="ticker-price" id="nasdaqPrice">—</span>
+                <span class="ticker-change" id="nasdaqChange">—</span>
+              </div>
+              <div class="ticker-row">
+                <span class="ticker-symbol">BTC</span>
+                <span class="ticker-price" id="btcPrice">—</span>
+                <span class="ticker-change" id="btcChange">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">⚡ Quick Actions</span>
+            </div>
+            <div class="quick-actions" style="flex-direction:column">
+              <div class="quick-action" onclick="openModal('addTask')">➕ New Task</div>
+              <div class="quick-action" onclick="toggleChat()">💬 Message Kiwi</div>
+              <div class="quick-action" onclick="navigateTo('operations')">🔄 View Agent Tasks</div>
+              <div class="quick-action" onclick="navigateTo('research')">🔍 Latest Intel</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🟢 Active Projects</span>
+              <span class="card-action" onclick="navigateTo('projects')">View All</span>
+            </div>
+            <div style="margin-bottom:16px;cursor:pointer;padding:8px;border-radius:8px;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="openModal('projectDetail', PROJECTS[0])">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="status-dot green"></span>
+                  <span style="font-weight:600;font-size:14px">Revenue Sprint</span>
+                </div>
+                <span class="badge green">Executing</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:8px">Turn $200 → $10K-$20K in 3-6 months</div>
+              <div class="progress-bar"><div class="progress-fill green" style="width:35%"></div></div>
+              <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">35% complete — Click for details</div>
+            </div>
+            <div style="cursor:pointer;padding:8px;border-radius:8px;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="openModal('projectDetail', PROJECTS[1])">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="status-dot green"></span>
+                  <span style="font-weight:600;font-size:14px">KlaseCo.com</span>
+                </div>
+                <span class="badge blue">Final Polish</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:8px">Public documentation site — Vektor rebrand</div>
+              <div class="progress-bar"><div class="progress-fill blue" style="width:80%"></div></div>
+              <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">80% complete — Click for details</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📡 Recent Activity</span>
+            </div>
+            <div class="feed-item" onclick="openModal('agentDetail', AGENTS.bolt)">
+              <div class="feed-icon" style="background:var(--kiwi-dim)">⚡</div>
+              <div class="feed-content">
+                <div class="feed-title">Bolt built Mission Control v3</div>
+                <div class="feed-meta">Today, 3:44 PM • Engineering</div>
+              </div>
+            </div>
+            <div class="feed-item" onclick="openModal('agentDetail', AGENTS.lens)">
+              <div class="feed-icon" style="background:var(--blue-dim)">🔍</div>
+              <div class="feed-content">
+                <div class="feed-title">Lens compiled 50 verified prospects</div>
+                <div class="feed-meta">Mar 27 • Research & Revenue</div>
+              </div>
+            </div>
+            <div class="feed-item" onclick="openModal('agentDetail', AGENTS.echo)">
+              <div class="feed-icon" style="background:var(--purple-dim)">🎙️</div>
+              <div class="feed-content">
+                <div class="feed-title">Echo delivered cold email templates</div>
+                <div class="feed-meta">Mar 27 • Content & Marketing</div>
+              </div>
+            </div>
+            <div class="feed-item" onclick="openModal('agentDetail', AGENTS.relay)">
+              <div class="feed-icon" style="background:var(--amber-dim)">🔗</div>
+              <div class="feed-content">
+                <div class="feed-title">Relay configured Sonnet fallback chain</div>
+                <div class="feed-meta">Mar 27 • Infrastructure</div>
+              </div>
+            </div>
+            <div class="feed-item" onclick="openModal('agentDetail', AGENTS.pixel)">
+              <div class="feed-icon" style="background:var(--cyan-dim)">🎨</div>
+              <div class="feed-content">
+                <div class="feed-title">Pixel generated Vektor brand concepts</div>
+                <div class="feed-meta">Mar 26 • Design</div>
+              </div>
+            </div>
+            <div class="feed-item" onclick="openModal('agentDetail', AGENTS.shield)">
+              <div class="feed-icon" style="background:var(--red-dim)">🛡️</div>
+              <div class="feed-content">
+                <div class="feed-title">Shield reviewed email security rules</div>
+                <div class="feed-meta">Mar 25 • Security</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: PROJECTS
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-projects">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Projects</div>
+            <div class="section-subtitle">Active and archived project portfolio</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addProject')">+ New Project</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchProjectTab(this,'active')">Active (2)</div>
+          <div class="tab" onclick="switchProjectTab(this,'archived')">Archived (5)</div>
+        </div>
+
+        <div id="projects-active" class="stack">
+          <div class="card clickable" onclick="openModal('projectDetail', PROJECTS[0])">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:24px">💰</span>
+                <div>
+                  <div style="font-size:16px;font-weight:700">Revenue Sprint</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">Primary Focus • Turn $200 into $10K-$20K in 3-6 months</div>
+                </div>
+              </div>
+              <span class="badge green">Executing</span>
+            </div>
+            <div class="grid-3" style="margin-bottom:16px">
+              <div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:4px">Stream 1: AI Service Arbitrage</div>
+                <div class="progress-bar"><div class="progress-fill green" style="width:40%"></div></div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">Cold emails done, 50 prospects</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:4px">Stream 2: Faceless Content</div>
+                <div class="progress-bar"><div class="progress-fill amber" style="width:15%"></div></div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">Niche research complete</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:4px">Stream 3: Digital Product</div>
+                <div class="progress-bar"><div class="progress-fill purple" style="width:10%"></div></div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">Not yet started</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-tertiary)">
+              <strong style="color:var(--text-primary)">Team:</strong> Lens, Echo, Bolt, Kiwi &nbsp;|&nbsp;
+              <strong style="color:var(--text-primary)">Target:</strong> $3K-$6K/mo by month 3
+            </div>
+          </div>
+
+          <div class="card clickable" onclick="openModal('projectDetail', PROJECTS[1])">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:24px">🌐</span>
+                <div>
+                  <div style="font-size:16px;font-weight:700">KlaseCo.com → TheVektorCorp.com</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">Public documentation site • Credibility + journey</div>
+                </div>
+              </div>
+              <span class="badge blue">Final Polish</span>
+            </div>
+            <div class="progress-bar" style="margin-bottom:12px"><div class="progress-fill blue" style="width:80%"></div></div>
+            <div style="font-size:12px;color:var(--text-tertiary)">
+              <strong style="color:var(--text-primary)">Status:</strong> V1 scaffold built (16 pages) &nbsp;|&nbsp;
+              <strong style="color:var(--text-primary)">Remaining:</strong> Voice polish, team page, legal review &nbsp;|&nbsp;
+              <strong style="color:var(--text-primary)">Blocked:</strong> GitHub Pages auth
+            </div>
+          </div>
+
+          <div class="card clickable" style="border-color:rgba(251,191,36,0.2)" onclick="openModal('projectDetail', PROJECTS[2])">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:24px">👔</span>
+                <div>
+                  <div style="font-size:16px;font-weight:700">Gucci / Kering (Day Job)</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">Manager, Supply Chain — Americas Region</div>
+                </div>
+              </div>
+              <span class="badge amber">Active — W2</span>
+            </div>
+            <div style="font-size:12px;color:var(--text-tertiary)">
+              <strong style="color:var(--text-primary)">Current:</strong> DEMNA FW26 rollout, CFOO reporting &nbsp;|&nbsp;
+              <strong style="color:var(--text-primary)">Schedule:</strong> Mon-Fri 9am-6pm (office 4 days/wk)
+            </div>
+          </div>
+        </div>
+
+        <div id="projects-archived" class="stack" style="display:none">
+          <div class="card clickable" style="opacity:0.7" onclick="showToast('Tailwind — Archived: Bets not winning, unclear pivot path','info')">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">📊</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600">Tailwind</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">Polymarket copy-trading tool</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px"><span class="badge red">Archived</span><span class="card-action" onclick="event.stopPropagation();openModal('reactivateProject',{name:'Tailwind'})">Reactivate?</span></div>
+            </div>
+          </div>
+          <div class="card clickable" style="opacity:0.7" onclick="showToast('Aperture AI — Archived: No content shipped. Moved under Revenue Sprint.','info')">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">📷</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600">Aperture AI</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">AI-powered faceless content studio</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px"><span class="badge red">Archived</span><span class="card-action" onclick="event.stopPropagation();openModal('reactivateProject',{name:'Aperture AI'})">Reactivate?</span></div>
+            </div>
+          </div>
+          <div class="card clickable" style="opacity:0.7" onclick="showToast('Rift Run — Archived: Built but no distribution strategy','info')">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">🎮</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600">Rift Run</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">Browser game</div>
+                </div>
+              </div>
+              <span class="badge red">Archived</span>
+            </div>
+          </div>
+          <div class="card clickable" style="opacity:0.7" onclick="showToast('SpawnPoint — Archived: Long-term, dependency risk. Market validated.','info')">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">🤖</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600">SpawnPoint</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">AI agent identity platform</div>
+                </div>
+              </div>
+              <span class="badge red">Archived</span>
+            </div>
+          </div>
+          <div class="card clickable" style="opacity:0.7" onclick="showToast('Collectibles Intel — Archived: Research phase only','info')">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">🏷️</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600">Collectibles Intel</div>
+                  <div style="font-size:12px;color:var(--text-tertiary)">Price intelligence for collectibles</div>
+                </div>
+              </div>
+              <span class="badge red">Archived</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: VENTURES
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-ventures">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Ventures</div>
+            <div class="section-subtitle">Revenue streams under The Vektor Corporation</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addVenture')">+ New Venture</button>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:20px">
+          <div class="card" style="border-left:3px solid var(--kiwi)">
+            <div class="stat-label">Target Monthly Revenue</div>
+            <div class="stat-value" style="color:var(--kiwi)">$3-6K</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">By month 3 (June 2026)</div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--amber)">
+            <div class="stat-label">6-Month Target</div>
+            <div class="stat-value" style="color:var(--amber)">$10-20K</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">By September 2026</div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="venture-card" style="border-left:3px solid var(--kiwi)" onclick="openModal('ventureDetail', VENTURES[0])">
+            <div class="venture-header">
+              <span class="venture-icon">🤖</span>
+              <div>
+                <div class="venture-name">Vektor AI Services</div>
+                <span class="badge green">Active — Primary</span>
+              </div>
+            </div>
+            <div class="venture-desc">AI service arbitrage targeting small businesses. 3-tier pricing: $149 / $349 / $599. Supply chain expertise differentiator.</div>
+            <div class="grid-3" style="margin-bottom:12px">
+              <div>
+                <div style="font-size:11px;color:var(--text-tertiary)">Pricing</div>
+                <div style="font-size:13px;font-weight:600">$149 – $599/project</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--text-tertiary)">Target Rate</div>
+                <div style="font-size:13px;font-weight:600">$85/hr → $125/hr</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--text-tertiary)">Prospects Sourced</div>
+                <div style="font-size:13px;font-weight:600">50 verified</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-tertiary)">
+              ✅ Cold emails (3) &nbsp; ✅ Landing page &nbsp; ✅ Prospect list &nbsp; ✅ Upwork research &nbsp; ⏳ Business plan
+            </div>
+          </div>
+
+          <div class="venture-card" style="border-left:3px solid var(--purple)" onclick="openModal('ventureDetail', VENTURES[1])">
+            <div class="venture-header">
+              <span class="venture-icon">📹</span>
+              <div>
+                <div class="venture-name">Faceless Content Channels</div>
+                <span class="badge purple">Research Phase</span>
+              </div>
+            </div>
+            <div class="venture-desc">Automated faceless content: Finance, Sleep, Motivational, Heartwarming niches. YouTube + TikTok.</div>
+            <div style="font-size:12px;color:var(--text-tertiary)">
+              ✅ Niche research &nbsp; ✅ Recommended: Finance first &nbsp; ⏳ Pipeline setup &nbsp; ⏳ First video
+            </div>
+          </div>
+
+          <div class="venture-card" style="border-left:3px solid var(--blue)" onclick="openModal('ventureDetail', VENTURES[2])">
+            <div class="venture-header">
+              <span class="venture-icon">📖</span>
+              <div>
+                <div class="venture-name">Digital Product: "How to Hire an AI Employee"</div>
+                <span class="badge blue">Planned</span>
+              </div>
+            </div>
+            <div class="venture-desc">Guide documenting Alex's journey. Based on lived experience. Ebook/course format.</div>
+            <div style="font-size:12px;color:var(--text-tertiary)">⏳ Not started — 5 journal entries written</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: TEAM
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-team">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Team</div>
+            <div class="section-subtitle">The Vektor Corporation — Organizational Chart</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addAgent')">+ Add Agent</button>
+        </div>
+
+        <!-- Org Chart -->
+        <div class="org-chart">
+          <div class="org-level">
+            <div class="org-card ceo" onclick="openModal('agentDetail', AGENTS.alex)">
+              <div class="org-emoji">👤</div>
+              <div class="org-name">Alex</div>
+              <div class="org-role">CEO / Founder</div>
+              <div class="org-status" style="color:var(--amber)">Vision · Strategy · Final Decisions</div>
+              <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px">Gucci (W2) + Vektor Corp</div>
+            </div>
+          </div>
+
+          <div class="org-connector"></div>
+
+          <div class="org-level">
+            <div class="org-card coo" onclick="openModal('agentDetail', AGENTS.kiwi)">
+              <div class="org-emoji">🥝</div>
+              <div class="org-name">Kiwi Klase</div>
+              <div class="org-role">COO / Chief of Staff</div>
+              <div class="org-status" style="color:var(--kiwi)">Coordination · Execution · Operations</div>
+              <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px">kiwiklase@agentmail.to</div>
+            </div>
+          </div>
+
+          <div class="org-connector"></div>
+
+          <div class="org-level">
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.bolt)">
+              <div class="org-emoji">⚡</div>
+              <div class="org-name">Bolt</div>
+              <div class="org-role">CTO · Engineering</div>
+              <div class="org-status" style="color:var(--kiwi)">Mission Control v3</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.spark)">
+              <div class="org-emoji">✨</div>
+              <div class="org-name">Spark</div>
+              <div class="org-role">CSO · Strategy</div>
+              <div class="org-status" style="color:var(--text-tertiary)">Revenue Sprint planning</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.echo)">
+              <div class="org-emoji">🎙️</div>
+              <div class="org-name">Echo</div>
+              <div class="org-role">CMO · Content</div>
+              <div class="org-status" style="color:var(--kiwi)">Cold email templates done</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.lens)">
+              <div class="org-emoji">🔍</div>
+              <div class="org-name">Lens</div>
+              <div class="org-role">CRO · Research</div>
+              <div class="org-status" style="color:var(--kiwi)">50 prospects compiled</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.pixel)">
+              <div class="org-emoji">🎨</div>
+              <div class="org-name">Pixel</div>
+              <div class="org-role">CDO · Design</div>
+              <div class="org-status" style="color:var(--blue)">Brand v3 concepts</div>
+            </div>
+          </div>
+
+          <div class="org-level" style="margin-top:-8px">
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.counsel)">
+              <div class="org-emoji">⚖️</div>
+              <div class="org-name">Counsel</div>
+              <div class="org-role">CLO · Legal</div>
+              <div class="org-status" style="color:var(--text-tertiary)">Standby — KlaseCo review</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.relay)">
+              <div class="org-emoji">🔗</div>
+              <div class="org-name">Relay</div>
+              <div class="org-role">CIO · Infrastructure</div>
+              <div class="org-status" style="color:var(--kiwi)">Model fallback configured</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.ledger)">
+              <div class="org-emoji">📊</div>
+              <div class="org-name">Ledger</div>
+              <div class="org-role">CFO · Finance</div>
+              <div class="org-status" style="color:var(--text-tertiary)">Revenue Sprint financials</div>
+            </div>
+            <div class="org-card" onclick="openModal('agentDetail', AGENTS.shield)">
+              <div class="org-emoji">🛡️</div>
+              <div class="org-name">Shield</div>
+              <div class="org-role">CISO · Security</div>
+              <div class="org-status" style="color:var(--kiwi)">Email security rules set</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Roster Table -->
+        <div class="card" style="margin-top:24px">
+          <div class="card-header">
+            <span class="card-title">Team Roster</span>
+            <span style="font-size:12px;color:var(--text-tertiary)">11 members • Click any row to view/edit</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Member</th><th>Role</th><th>Status</th><th>Current Assignment</th><th>Last Active</th></tr>
+              </thead>
+              <tbody>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.alex)">
+                  <td><span style="font-weight:600">👤 Alex</span></td>
+                  <td>CEO / Founder</td>
+                  <td><span class="badge amber">Human</span></td>
+                  <td>Vision, approvals, Gucci W2</td>
+                  <td style="color:var(--kiwi)">Today</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.kiwi)">
+                  <td><span style="font-weight:600">🥝 Kiwi</span></td>
+                  <td>COO / Chief of Staff</td>
+                  <td><span class="badge green">Online</span></td>
+                  <td>Mission Control, team coordination</td>
+                  <td style="color:var(--kiwi)">Now</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.bolt)">
+                  <td><span style="font-weight:600">⚡ Bolt</span></td>
+                  <td>CTO / Engineering</td>
+                  <td><span class="badge green">Active</span></td>
+                  <td>Mission Control v3 rebuild</td>
+                  <td>Today</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.spark)">
+                  <td><span style="font-weight:600">✨ Spark</span></td>
+                  <td>CSO / Strategy</td>
+                  <td><span class="badge muted">Idle</span></td>
+                  <td>Revenue Sprint architecture</td>
+                  <td>Mar 25</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.echo)">
+                  <td><span style="font-weight:600">🎙️ Echo</span></td>
+                  <td>CMO / Content</td>
+                  <td><span class="badge green">Complete</span></td>
+                  <td>Cold email campaign (delivered)</td>
+                  <td>Mar 27</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.lens)">
+                  <td><span style="font-weight:600">🔍 Lens</span></td>
+                  <td>CRO / Research</td>
+                  <td><span class="badge green">Complete</span></td>
+                  <td>50 prospects + market research</td>
+                  <td>Mar 27</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.pixel)">
+                  <td><span style="font-weight:600">🎨 Pixel</span></td>
+                  <td>CDO / Design</td>
+                  <td><span class="badge blue">Delivered</span></td>
+                  <td>Vektor branding v3</td>
+                  <td>Mar 26</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.counsel)">
+                  <td><span style="font-weight:600">⚖️ Counsel</span></td>
+                  <td>CLO / Legal</td>
+                  <td><span class="badge muted">Standby</span></td>
+                  <td>Awaiting KlaseCo.com legal review</td>
+                  <td>—</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.relay)">
+                  <td><span style="font-weight:600">🔗 Relay</span></td>
+                  <td>CIO / Infrastructure</td>
+                  <td><span class="badge green">Complete</span></td>
+                  <td>Sonnet fallback chain, cron jobs</td>
+                  <td>Mar 27</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.ledger)">
+                  <td><span style="font-weight:600">📊 Ledger</span></td>
+                  <td>CFO / Finance</td>
+                  <td><span class="badge muted">Idle</span></td>
+                  <td>Revenue Sprint financial modeling</td>
+                  <td>—</td>
+                </tr>
+                <tr class="clickable-row" onclick="openModal('agentDetail', AGENTS.shield)">
+                  <td><span style="font-weight:600">🛡️ Shield</span></td>
+                  <td>CISO / Security</td>
+                  <td><span class="badge green">Complete</span></td>
+                  <td>Email security hardening</td>
+                  <td>Mar 25</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: OPERATIONS HUB
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-operations">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Operations Hub</div>
+            <div class="section-subtitle">Agent tasks, automations, system health</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addTask')">+ New Task</button>
+        </div>
+
+        <div class="grid-4" style="margin-bottom:20px">
+          <div class="card clickable" onclick="document.querySelector('[onclick*=switchOpsTab][onclick*=tasks]').click()">
+            <div class="stat-label">Active Tasks</div>
+            <div class="stat-value" style="color:var(--kiwi)">1</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Mission Control rebuild</div>
+          </div>
+          <div class="card">
+            <div class="stat-label">Queued</div>
+            <div class="stat-value" style="color:var(--amber)">3</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Awaiting assignment</div>
+          </div>
+          <div class="card">
+            <div class="stat-label">Completed (7 days)</div>
+            <div class="stat-value" style="color:var(--blue)">14</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Since Day 1</div>
+          </div>
+          <div class="card">
+            <div class="stat-label">System Uptime</div>
+            <div class="stat-value" style="color:var(--kiwi)">99%</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Mac mini • Online</div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchOpsTab(this,'tasks')">Task Queue</div>
+          <div class="tab" onclick="switchOpsTab(this,'automations')">Automations</div>
+          <div class="tab" onclick="switchOpsTab(this,'logs')">System Logs</div>
+          <div class="tab" onclick="switchOpsTab(this,'health')">Skill Health</div>
+        </div>
+
+        <div id="ops-tasks">
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-header"><span class="card-title">🟢 Active</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Agent</th><th>Priority</th><th>Started</th><th></th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row" onclick="openModal('taskDetail', {name:'Mission Control v3 Rebuild',agent:'Bolt',priority:'P0',started:'Today 3:44 PM',status:'active'})">
+                    <td style="font-weight:600">Mission Control v3 Rebuild</td>
+                    <td>⚡ Bolt</td>
+                    <td><span class="badge red">P0</span></td>
+                    <td>Today 3:44 PM</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-header">
+              <span class="card-title">🟡 Queued</span>
+              <span class="card-action" onclick="openModal('addTask')">+ Add</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Assigned To</th><th>Priority</th><th>Notes</th><th></th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row" onclick="openModal('taskDetail', {name:'KlaseCo.com legal review',agent:'Counsel',priority:'P1',notes:'Before public launch',status:'queued'})">
+                    <td>KlaseCo.com legal review</td>
+                    <td>⚖️ Counsel</td>
+                    <td><span class="badge amber">P1</span></td>
+                    <td>Before public launch</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                  <tr class="clickable-row" onclick="openModal('taskDetail', {name:'Faceless content pipeline',agent:'Echo + Bolt',priority:'P2',notes:'Finance niche first',status:'queued'})">
+                    <td>Faceless content pipeline setup</td>
+                    <td>🎙️ Echo + ⚡ Bolt</td>
+                    <td><span class="badge blue">P2</span></td>
+                    <td>Finance niche first</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                  <tr class="clickable-row" onclick="openModal('taskDetail', {name:'Upwork profile optimization',agent:'Lens',priority:'P2',notes:'Supply chain positioning',status:'queued'})">
+                    <td>Upwork profile optimization</td>
+                    <td>🔍 Lens</td>
+                    <td><span class="badge blue">P2</span></td>
+                    <td>Supply chain positioning</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">✅ Recently Completed</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Agent</th><th>Completed</th></tr></thead>
+                <tbody>
+                  <tr><td>Cold email campaign (3 templates)</td><td>🎙️ Echo</td><td>Mar 27</td></tr>
+                  <tr><td>50 verified prospect list</td><td>🔍 Lens</td><td>Mar 27</td></tr>
+                  <tr><td>AI Services landing page</td><td>⚡ Bolt</td><td>Mar 27</td></tr>
+                  <tr><td>Upwork/Fiverr competitive research</td><td>🔍 Lens</td><td>Mar 27</td></tr>
+                  <tr><td>Model fallback chain</td><td>🔗 Relay</td><td>Mar 27</td></tr>
+                  <tr><td>Agent memory system (9 CONTEXT.md)</td><td>🥝 Kiwi</td><td>Mar 27</td></tr>
+                  <tr><td>Vektor branding v3</td><td>🎨 Pixel</td><td>Mar 26</td></tr>
+                  <tr><td>Email security hardening</td><td>🛡️ Shield</td><td>Mar 25</td></tr>
+                  <tr><td>Revenue Sprint business plan</td><td>✨ Spark</td><td>Mar 25</td></tr>
+                  <tr><td>KlaseCo.com V1 scaffold</td><td>⚡ Bolt</td><td>Mar 23</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="ops-automations" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">⏰ Active Cron Jobs</span>
+              <span class="card-action" onclick="openModal('addCron')">+ Add Job</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Job</th><th>Schedule</th><th>Status</th><th>Last Run</th><th></th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row" onclick="openModal('cronDetail', {name:'Memory Consolidation',schedule:'2:00 AM ET daily',lastRun:'Today 2:00 AM'})">
+                    <td>Memory Consolidation</td>
+                    <td><code style="color:var(--cyan);font-size:12px">2:00 AM ET daily</code></td>
+                    <td><span class="badge green">Active</span></td>
+                    <td>Today 2:00 AM</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                  <tr class="clickable-row">
+                    <td>Memory Backup Check</td>
+                    <td><code style="color:var(--cyan);font-size:12px">3:00 AM ET daily</code></td>
+                    <td><span class="badge green">Active</span></td>
+                    <td>Today 3:00 AM</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                  <tr class="clickable-row">
+                    <td>GitHub Workspace Backup</td>
+                    <td><code style="color:var(--cyan);font-size:12px">3:30 AM ET daily</code></td>
+                    <td><span class="badge green">Active</span></td>
+                    <td>Today 3:30 AM</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                  <tr class="clickable-row">
+                    <td>Morning Briefing</td>
+                    <td><code style="color:var(--cyan);font-size:12px">6:30 AM ET daily</code></td>
+                    <td><span class="badge green">Active</span></td>
+                    <td>Today 6:30 AM</td>
+                    <td><span class="card-action">Edit →</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="ops-logs" style="display:none">
+          <div class="card" style="padding:12px;font-family:'SF Mono','Fira Code',monospace">
+            <div class="log-entry"><span class="log-time">15:44:00</span><span class="log-level ok">OK</span><span class="log-msg">subagent:bolt spawned — Mission Control v3 rebuild (full interactivity)</span></div>
+            <div class="log-entry"><span class="log-time">10:15:01</span><span class="log-level info">INFO</span><span class="log-msg">Mission Control v2 reviewed — gaps identified by CEO</span></div>
+            <div class="log-entry"><span class="log-time">06:30:00</span><span class="log-level ok">OK</span><span class="log-msg">morning-briefing cron executed successfully</span></div>
+            <div class="log-entry"><span class="log-time">03:30:02</span><span class="log-level ok">OK</span><span class="log-msg">github-backup pushed to KiwiKlase/workspace-backup</span></div>
+            <div class="log-entry"><span class="log-time">03:00:01</span><span class="log-level ok">OK</span><span class="log-msg">memory-backup integrity check passed</span></div>
+            <div class="log-entry"><span class="log-time">02:00:03</span><span class="log-level ok">OK</span><span class="log-msg">memory-consolidation completed — 0 new entries</span></div>
+            <div class="log-entry"><span class="log-time">Mar 27</span><span class="log-level warn">WARN</span><span class="log-msg">model-overload: switched default Opus → Sonnet (rate limit)</span></div>
+            <div class="log-entry"><span class="log-time">Mar 26</span><span class="log-level info">INFO</span><span class="log-msg">openclaw upgraded: $100/mo → $200/mo (Pro Plan)</span></div>
+            <div class="log-entry"><span class="log-time">Mar 25</span><span class="log-level ok">OK</span><span class="log-msg">screen-recording permission enabled</span></div>
+            <div class="log-entry"><span class="log-time">Mar 22</span><span class="log-level info">INFO</span><span class="log-msg">system-init: Kiwi Klase operational — Day 1 begins</span></div>
+          </div>
+        </div>
+
+        <div id="ops-health" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">🔧 Skill & Tool Health</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Skill / Tool</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row"><td>Telegram</td><td><span class="badge green">Connected</span></td><td>Only trusted command channel</td><td><span class="card-action">Config →</span></td></tr>
+                  <tr class="clickable-row"><td>GitHub (KiwiKlase)</td><td><span class="badge green">Connected</span></td><td>workspace-backup repo</td><td><span class="card-action">Config →</span></td></tr>
+                  <tr class="clickable-row"><td>Playwright Browser</td><td><span class="badge green">Installed</span></td><td>Gemini browser script</td><td></td></tr>
+                  <tr class="clickable-row"><td>Codex (v0.116.0)</td><td><span class="badge green">Installed</span></td><td>Code execution agent</td><td></td></tr>
+                  <tr class="clickable-row"><td>yt-dlp + ffmpeg</td><td><span class="badge green">Installed</span></td><td>Video pipeline</td><td></td></tr>
+                  <tr class="clickable-row"><td>Airtable</td><td><span class="badge amber">API Key Only</span></td><td>No bases built</td><td><span class="card-action">Setup →</span></td></tr>
+                  <tr class="clickable-row"><td>ElevenLabs</td><td><span class="badge amber">API Key Only</span></td><td>TTS available</td><td><span class="card-action">Setup →</span></td></tr>
+                  <tr class="clickable-row"><td>Gmail / Google Cal</td><td><span class="badge red">Not Connected</span></td><td>Planned</td><td><span class="card-action">Connect →</span></td></tr>
+                  <tr class="clickable-row"><td>Discord</td><td><span class="badge red">Not Connected</span></td><td>Guide drafted</td><td><span class="card-action">Connect →</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: RESEARCH & INTEL
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-research">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Research & Intel</div>
+            <div class="section-subtitle">Market intelligence, competitor tracking, industry feeds</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addResearch')">+ Add Intel</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchResearchTab(this,'market')">Market News</div>
+          <div class="tab" onclick="switchResearchTab(this,'competitors')">Competitors</div>
+          <div class="tab" onclick="switchResearchTab(this,'industry')">Industry</div>
+          <div class="tab" onclick="switchResearchTab(this,'research')">Our Research</div>
+        </div>
+
+        <div id="research-market">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><span class="card-title">📊 Market Watchlist</span></div>
+              <div class="ticker-row">
+                <div><span class="ticker-symbol">S&P 500</span><div style="font-size:10px;color:var(--text-tertiary)">US Large Cap</div></div>
+                <span class="ticker-price" id="sp500Price2">—</span>
+                <span class="ticker-change" id="sp500Change2">—</span>
+              </div>
+              <div class="ticker-row">
+                <div><span class="ticker-symbol">NASDAQ</span><div style="font-size:10px;color:var(--text-tertiary)">Tech Heavy</div></div>
+                <span class="ticker-price" id="nasdaqPrice2">—</span>
+                <span class="ticker-change" id="nasdaqChange2">—</span>
+              </div>
+              <div class="ticker-row">
+                <div><span class="ticker-symbol">BTC/USD</span><div style="font-size:10px;color:var(--text-tertiary)">Bitcoin</div></div>
+                <span class="ticker-price" id="btcPrice2">—</span>
+                <span class="ticker-change" id="btcChange2">—</span>
+              </div>
+              <div class="ticker-row">
+                <div><span class="ticker-symbol">ETH/USD</span><div style="font-size:10px;color:var(--text-tertiary)">Ethereum</div></div>
+                <span class="ticker-price" id="ethPrice">—</span>
+                <span class="ticker-change" id="ethChange">—</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">📰 AI Industry Headlines</span></div>
+              <div class="intel-item" onclick="openModal('intelDetail', {source:'AI / LLMs',headline:'Claude Opus 4.6 now available',summary:'Strongest coding model from Anthropic. Extended thinking + improved agent capabilities.'})">
+                <div class="intel-source" style="color:var(--cyan)">AI / LLMs</div>
+                <div class="intel-headline">Claude Opus 4.6 now available — strongest coding model</div>
+                <div class="intel-summary">Key for our operations. Extended thinking and improved agent capabilities.</div>
+              </div>
+              <div class="intel-item" onclick="openModal('intelDetail', {source:'Creator Economy',headline:'Faceless YouTube channels hitting $50K/mo',summary:'Finance and motivational niches leading. Validates Revenue Sprint Stream 2.'})">
+                <div class="intel-source" style="color:var(--purple)">Creator Economy</div>
+                <div class="intel-headline">Faceless YouTube channels hitting $50K/mo with AI content</div>
+                <div class="intel-summary">Finance/motivational niches leading. Validates our approach.</div>
+              </div>
+              <div class="intel-item" onclick="openModal('intelDetail', {source:'Freelance Market',headline:'Upwork AI services demand up 200% YoY',summary:'Small businesses seeking AI automation. Our $85-125/hr rate is competitive.'})">
+                <div class="intel-source" style="color:var(--kiwi)">Freelance Market</div>
+                <div class="intel-headline">Upwork AI services demand up 200% YoY</div>
+                <div class="intel-summary">Our $85-125/hr rate competitive for supply chain expertise.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="research-competitors" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">🎯 Competitive Landscape</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Competitor</th><th>Space</th><th>Assessment</th><th>Our Advantage</th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row"><td style="font-weight:600">ActionAgents</td><td>AI Agent Platform</td><td><span class="badge amber">Half-Built</span></td><td>SpawnPoint validated but they haven't shipped</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">Felix Craft</td><td>AI Employee Playbook</td><td><span class="badge green">Inspiration</span></td><td>Our C-suite team story is unique</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">Upwork AI Freelancers</td><td>AI Services</td><td><span class="badge blue">Crowded</span></td><td>Supply chain expertise = niche. $85/hr.</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">Fiverr AI Gigs</td><td>Commoditized AI</td><td><span class="badge red">Too Cheap</span></td><td>$149-$599 tier doesn't compete here</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="research-industry" style="display:none">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><span class="card-title">🏗️ AI Services Market</span></div>
+              <div class="intel-item"><div class="intel-headline">Small business AI adoption at inflection point</div><div class="intel-summary">Restaurants, e-commerce, consultants — all behind on AI. Demand outpacing supply of quality providers.</div></div>
+              <div class="intel-item"><div class="intel-headline">Supply chain AI is undersold niche</div><div class="intel-summary">Alex's Gucci/Kering background is genuine differentiator. Most AI freelancers are generalists.</div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">👔 Luxury / Fashion Intel</span></div>
+              <div class="intel-item"><div class="intel-headline">DEMNA FW26 collection rollout in progress</div><div class="intel-summary">Alex's current workload at Gucci. Americas supply chain coordination.</div></div>
+              <div class="intel-item"><div class="intel-headline">Kering restructuring continues</div><div class="intel-summary">Context for day job stability and side venture urgency.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="research-research" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📋 Completed Research Reports</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Report</th><th>Agent</th><th>Date</th><th>File</th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row"><td style="font-weight:600">Upwork/Fiverr Competitive Analysis</td><td>🔍 Lens</td><td>Mar 27</td><td style="font-size:11px;color:var(--cyan)">ai-services/upwork-fiverr-research.md</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">Prospect List (50 businesses)</td><td>🔍 Lens</td><td>Mar 27</td><td style="font-size:11px;color:var(--cyan)">ai-services/prospect-list.md</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">Faceless Content Strategy</td><td>🔍 Lens</td><td>Mar 27</td><td style="font-size:11px;color:var(--cyan)">Aperture AI (4 niches)</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">AI Services Business Plan</td><td>✨ Spark</td><td>Mar 27</td><td style="font-size:11px;color:var(--cyan)">9 packages, 3-tier pricing</td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">ActionAgents Competitor Analysis</td><td>🔍 Lens</td><td>Mar 26</td><td style="font-size:11px;color:var(--cyan)">SpawnPoint market validation</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: FINANCES
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-finances">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Finances</div>
+            <div class="section-subtitle">Revenue tracking, expenses, and projections</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addExpense')">+ Log Expense</button>
+        </div>
+
+        <div class="grid-4" style="margin-bottom:20px">
+          <div class="card" style="border-left:3px solid var(--red)">
+            <div class="stat-label">Revenue (MTD)</div>
+            <div class="stat-value">$0</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Pre-revenue</div>
+          </div>
+          <div class="card clickable" style="border-left:3px solid var(--amber)" onclick="openModal('expenseBreakdown')">
+            <div class="stat-label">Monthly Expenses</div>
+            <div class="stat-value">$200</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Click for breakdown →</div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--kiwi)">
+            <div class="stat-label">Target (Month 3)</div>
+            <div class="stat-value" style="color:var(--kiwi)">$3-6K</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">June 2026</div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--purple)">
+            <div class="stat-label">Initial Investment</div>
+            <div class="stat-value">$200</div>
+            <div style="font-size:11px;color:var(--text-tertiary)">Seed capital</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">💸 Expenses</span>
+              <span class="card-action" onclick="openModal('addExpense')">+ Add</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Item</th><th>Cost</th><th>Frequency</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row"><td>OpenClaw Pro Plan</td><td style="font-weight:600">$200/mo</td><td>Monthly</td><td><span class="badge green">Active</span></td></tr>
+                  <tr class="clickable-row"><td>thevektorcorp.com domain</td><td style="font-weight:600">TBD</td><td>Annual</td><td><span class="badge amber">Planned</span></td></tr>
+                  <tr class="clickable-row"><td>Mac mini (hardware)</td><td style="font-weight:600">$0/mo</td><td>Owned</td><td><span class="badge green">Active</span></td></tr>
+                  <tr class="clickable-row"><td>GitHub (free tier)</td><td style="font-weight:600">$0/mo</td><td>Monthly</td><td><span class="badge green">Active</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">📈 Revenue Projections</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Stream</th><th>Month 1</th><th>Month 3</th><th>Month 6</th></tr></thead>
+                <tbody>
+                  <tr><td style="font-weight:600">AI Services</td><td>$500-1K</td><td>$2-4K</td><td>$5-10K</td></tr>
+                  <tr><td style="font-weight:600">Faceless Content</td><td>$0</td><td>$500-1K</td><td>$2-5K</td></tr>
+                  <tr><td style="font-weight:600">Digital Product</td><td>$0</td><td>$0</td><td>$3-5K</td></tr>
+                  <tr style="font-weight:700"><td>Total</td><td style="color:var(--amber)">$500-1K</td><td style="color:var(--kiwi)">$3-6K</td><td style="color:var(--kiwi)">$10-20K</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><span class="card-title">🎯 ROI Analysis</span></div>
+          <div class="grid-3">
+            <div>
+              <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:6px">Break-Even</div>
+              <div style="font-size:20px;font-weight:700;color:var(--amber)">Month 1</div>
+              <div style="font-size:11px;color:var(--text-tertiary)">1-2 AI service clients</div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:6px">Alex's Time</div>
+              <div style="font-size:20px;font-weight:700;color:var(--blue)">~5 hrs/wk</div>
+              <div style="font-size:11px;color:var(--text-tertiary)">Kiwi handles 80% async</div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:6px">Capital Efficiency</div>
+              <div style="font-size:20px;font-weight:700;color:var(--kiwi)">50-100x</div>
+              <div style="font-size:11px;color:var(--text-tertiary)">$200 seed → $10K-20K</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PAGE: KNOWLEDGE BASE
+           ════════════════════════════════════════════ -->
+      <div class="page" id="page-knowledge">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Knowledge Base</div>
+            <div class="section-subtitle">Core documents, playbooks, operational knowledge</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addKB')">+ Add Document</button>
+        </div>
+
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="Search knowledge base... (⌘K)" id="kbSearch" oninput="filterKB()">
+        </div>
+
+        <div class="stack" id="kbList">
+          <div class="nav-section-label">Core Operating Files</div>
+          <div class="kb-item" data-tags="identity soul core" onclick="openModal('kbDetail', {icon:'🥝',title:'SOUL.md',desc:'Voice, tone, boundaries, trust levels, operating style',path:'SOUL.md'})">
+            <span class="kb-icon">🥝</span>
+            <div class="kb-info"><div class="kb-title-text">SOUL.md — Who Kiwi Is</div><div class="kb-desc">Voice, tone, boundaries, trust levels, operating style</div></div>
+            <span class="kb-date">Core</span>
+          </div>
+item" data-tags="user alex core" onclick="openModal('kbDetail', {icon:'👤',title:'USER.md',desc:'Communication style, day job, strengths, working style',path:'USER.md'})">
+            <span class="kb-icon">👤</span>
+            <div class="kb-info"><div class="kb-title-text">USER.md — About Alex</div><div class="kb-desc">Communication style, day job, strengths, working style</div></div>
+            <span class="kb-date">Core</span>
+          </div>
+          <div class="kb-item" data-tags="memory core" onclick="openModal('kbDetail', {icon:'🧠',title:'MEMORY.md',desc:'Critical rules, business context, automation philosophy',path:'MEMORY.md'})">
+            <span class="kb-icon">🧠</span>
+            <div class="kb-info"><div class="kb-title-text">MEMORY.md — Core Operating Knowledge</div><div class="kb-desc">Critical rules, business context, automation philosophy</div></div>
+            <span class="kb-date">Updated daily</span>
+          </div>
+          <div class="kb-item" data-tags="identity" onclick="openModal('kbDetail', {icon:'🏢',title:'IDENTITY.md',desc:'Name, role, emoji, vibe, reporting chain',path:'IDENTITY.md'})">
+            <span class="kb-icon">🏢</span>
+            <div class="kb-info"><div class="kb-title-text">IDENTITY.md — Kiwi's Identity</div><div class="kb-desc">Name, role, emoji, vibe, reporting chain</div></div>
+            <span class="kb-date">Core</span>
+          </div>
+
+          <div class="nav-section-label" style="margin-top:12px">Organization</div>
+          <div class="kb-item" data-tags="org team" onclick="navigateTo('team')">
+            <span class="kb-icon">📋</span>
+            <div class="kb-info"><div class="kb-title-text">DEPARTMENTS.md — Org Structure</div><div class="kb-desc">Flat team model, 6 core roles</div></div>
+            <span class="kb-date">org/</span>
+          </div>
+          <div class="kb-item" data-tags="agents memory">
+            <span class="kb-icon">🤖</span>
+            <div class="kb-info"><div class="kb-title-text">Agent Memory System</div><div class="kb-desc">9 CONTEXT.md files — persistent knowledge per agent</div></div>
+            <span class="kb-date">agents/</span>
+          </div>
+
+          <div class="nav-section-label" style="margin-top:12px">Infrastructure</div>
+          <div class="kb-item" data-tags="infra setup">
+            <span class="kb-icon">🖥️</span>
+            <div class="kb-info"><div class="kb-title-text">SETUP.md — Infrastructure</div><div class="kb-desc">Mac mini, software, services, cron jobs</div></div>
+            <span class="kb-date">infra/</span>
+          </div>
+
+          <div class="nav-section-label" style="margin-top:12px">Project Documents</div>
+          <div class="kb-item" data-tags="projects status" onclick="navigateTo('projects')">
+            <span class="kb-icon">📊</span>
+            <div class="kb-info"><div class="kb-title-text">STATUS.md — Project Portfolio</div><div class="kb-desc">Active (2) and archived (5) projects</div></div>
+            <span class="kb-date">projects/</span>
+          </div>
+          <div class="kb-item" data-tags="revenue landing">
+            <span class="kb-icon">💰</span>
+            <div class="kb-info"><div class="kb-title-text">AI Services Landing Page</div><div class="kb-desc">Premium single-page site, deploy-ready</div></div>
+            <span class="kb-date">revenue-sprint/</span>
+          </div>
+          <div class="kb-item" data-tags="email outreach">
+            <span class="kb-icon">📧</span>
+            <div class="kb-info"><div class="kb-title-text">Cold Email Campaign + Prospects</div><div class="kb-desc">3 templates, 50 verified businesses</div></div>
+            <span class="kb-date">revenue-sprint/</span>
+          </div>
+
+          <div class="nav-section-label" style="margin-top:12px">References</div>
+          <div class="kb-item" data-tags="timeline history">
+            <span class="kb-icon">📅</span>
+            <div class="kb-info"><div class="kb-title-text">TIMELINE.md — Key Dates</div><div class="kb-desc">Day-by-day history since March 22, 2026</div></div>
+            <span class="kb-date">memory/</span>
+          </div>
+          <div class="kb-item" data-tags="playbook felix">
+            <span class="kb-icon">📖</span>
+            <div class="kb-info"><div class="kb-title-text">Felix Craft's "How to Hire an AI" Playbook</div><div class="kb-desc">Shared reference — patterns for AI employees</div></div>
+            <span class="kb-date">Reference</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ PAGE: CONTACTS ═══════════ -->
+      <div class="page" id="page-contacts">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Contacts & Network</div>
+            <div class="section-subtitle">Key people, external contacts, channels</div>
+          </div>
+          <button class="add-btn" onclick="openModal('addContact')">+ Add Contact</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchContactTab(this,'internal')">Internal (11)</div>
+          <div class="tab" onclick="switchContactTab(this,'external')">External</div>
+          <div class="tab" onclick="switchContactTab(this,'channels')">Channels</div>
+        </div>
+
+        <div id="contacts-internal">
+          <div class="grid-auto">
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.alex)">
+              <div class="contact-avatar" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">👤</div>
+              <div class="contact-info">
+                <div class="contact-name">Alex</div>
+                <div class="contact-role">CEO / Founder — Brooklyn, NY</div>
+                <div class="contact-tags"><span class="badge amber">Human</span><span class="badge muted">Telegram</span></div>
+              </div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.kiwi)">
+              <div class="contact-avatar" style="background:linear-gradient(135deg,var(--kiwi),#22c55e)">🥝</div>
+              <div class="contact-info">
+                <div class="contact-name">Kiwi Klase</div>
+                <div class="contact-role">COO / Chief of Staff</div>
+                <div class="contact-tags"><span class="badge green">AI Agent</span><span class="badge muted">kiwiklase@agentmail.to</span></div>
+              </div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.bolt)">
+              <div class="contact-avatar" style="background:var(--blue-dim)">⚡</div>
+              <div class="contact-info"><div class="contact-name">Bolt</div><div class="contact-role">CTO · Engineering</div><div class="contact-tags"><span class="badge blue">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.spark)">
+              <div class="contact-avatar" style="background:var(--purple-dim)">✨</div>
+              <div class="contact-info"><div class="contact-name">Spark</div><div class="contact-role">CSO · Strategy</div><div class="contact-tags"><span class="badge purple">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.echo)">
+              <div class="contact-avatar" style="background:var(--cyan-dim)">🎙️</div>
+              <div class="contact-info"><div class="contact-name">Echo</div><div class="contact-role">CMO · Content</div><div class="contact-tags"><span class="badge cyan">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.lens)">
+              <div class="contact-avatar" style="background:var(--kiwi-dim)">🔍</div>
+              <div class="contact-info"><div class="contact-name">Lens</div><div class="contact-role">CRO · Research</div><div class="contact-tags"><span class="badge green">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.pixel)">
+              <div class="contact-avatar" style="background:var(--amber-dim)">🎨</div>
+              <div class="contact-info"><div class="contact-name">Pixel</div><div class="contact-role">CDO · Design</div><div class="contact-tags"><span class="badge amber">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.counsel)">
+              <div class="contact-avatar" style="background:var(--red-dim)">⚖️</div>
+              <div class="contact-info"><div class="contact-name">Counsel</div><div class="contact-role">CLO · Legal</div><div class="contact-tags"><span class="badge red">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.relay)">
+              <div class="contact-avatar" style="background:var(--blue-dim)">🔗</div>
+              <div class="contact-info"><div class="contact-name">Relay</div><div class="contact-role">CIO · Infrastructure</div><div class="contact-tags"><span class="badge blue">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.ledger)">
+              <div class="contact-avatar" style="background:var(--purple-dim)">📊</div>
+              <div class="contact-info"><div class="contact-name">Ledger</div><div class="contact-role">CFO · Finance</div><div class="contact-tags"><span class="badge purple">Sub-Agent</span></div></div>
+            </div>
+            <div class="contact-card" onclick="openModal('agentDetail', AGENTS.shield)">
+              <div class="contact-avatar" style="background:var(--red-dim)">🛡️</div>
+              <div class="contact-info"><div class="contact-name">Shield</div><div class="contact-role">CISO · Security</div><div class="contact-tags"><span class="badge red">Sub-Agent</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="contacts-external" style="display:none">
+          <div class="card">
+            <div style="text-align:center;padding:40px;color:var(--text-tertiary)">
+              <div style="font-size:32px;margin-bottom:12px">📇</div>
+              <div style="font-size:14px;font-weight:500">No external contacts yet</div>
+              <div style="font-size:12px;margin-top:4px">Contacts will appear as client relationships develop.</div>
+              <button class="add-btn" style="margin-top:16px" onclick="openModal('addContact')">+ Add First Contact</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="contacts-channels" style="display:none">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📡 Communication Channels</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Channel</th><th>Purpose</th><th>Status</th><th>Trust</th></tr></thead>
+                <tbody>
+                  <tr class="clickable-row"><td style="font-weight:600">📱 Telegram</td><td>Primary command channel</td><td><span class="badge green">Active</span></td><td><span class="badge green">TRUSTED</span></td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">📧 AgentMail</td><td>External mail</td><td><span class="badge green">Active</span></td><td><span class="badge amber">Read Only</span></td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">💬 Discord</td><td>Community / team</td><td><span class="badge red">Not Connected</span></td><td><span class="badge muted">TBD</span></td></tr>
+                  <tr class="clickable-row"><td style="font-weight:600">🐦 X / Twitter</td><td>Public presence</td><td><span class="badge red">Not Connected</span></td><td><span class="badge muted">TBD</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ PAGE: SETTINGS ═══════════ -->
+      <div class="page" id="page-settings">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Settings</div>
+            <div class="section-subtitle">System configuration and preferences</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="stack">
+            <div class="card">
+              <div class="settings-group">
+                <div class="settings-group-title">🏢 Organization</div>
+                <div class="setting-row" onclick="openModal('editSetting',{label:'Company Name',value:'The Vektor Corporation',key:'orgName'})"><div><div class="setting-label">Company Name</div></div><div class="setting-value">The Vektor Corporation</div></div>
+                <div class="setting-row" onclick="openModal('editSetting',{label:'Domain',value:'thevektorcorp.com',key:'domain'})"><div><div class="setting-label">Domain</div></div><div class="setting-value">thevektorcorp.com</div></div>
+                <div class="setting-row" onclick="openModal('editSetting',{label:'Handle',value:'@thevektorcorp',key:'handle'})"><div><div class="setting-label">Handle</div></div><div class="setting-value">@thevektorcorp</div></div>
+                <div class="setting-row"><div><div class="setting-label">Entity Type</div></div><div class="setting-value">C Corp (planned)</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="settings-group">
+                <div class="settings-group-title">🤖 AI Configuration</div>
+                <div class="setting-row" onclick="openModal('editSetting',{label:'Default Model',value:'claude-sonnet-4',key:'model'})"><div><div class="setting-label">Default Model</div><div class="setting-desc">Primary for sub-agents</div></div><div class="setting-value">claude-sonnet-4</div></div>
+                <div class="setting-row"><div><div class="setting-label">Fallback Chain</div></div><div class="setting-value">Opus → Sonnet → Haiku</div></div>
+                <div class="setting-row"><div><div class="setting-label">OpenClaw Plan</div></div><div class="setting-value">$200/mo (Pro)</div></div>
+                <div class="setting-row"><div><div class="setting-label">Coding Agent</div></div><div class="setting-value">Codex v0.116.0</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="card">
+              <div class="settings-group">
+                <div class="settings-group-title">🖥️ Infrastructure</div>
+                <div class="setting-row"><div><div class="setting-label">Host</div></div><div class="setting-value">Mac mini (Apple Silicon)</div></div>
+                <div class="setting-row"><div><div class="setting-label">OS</div></div><div class="setting-value">Darwin 25.4.0 (arm64)</div></div>
+                <div class="setting-row"><div><div class="setting-label">Node.js</div></div><div class="setting-value">v22.22.1</div></div>
+                <div class="setting-row"><div><div class="setting-label">Shell</div></div><div class="setting-value">zsh</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="settings-group">
+                <div class="settings-group-title">🔒 Security</div>
+                <div class="setting-row"><div><div class="setting-label">Trusted Channel</div></div><div class="setting-value" style="color:var(--kiwi)">Telegram Only</div></div>
+                <div class="setting-row"><div><div class="setting-label">Email Trust</div></div><div class="setting-value" style="color:var(--red)">UNTRUSTED</div></div>
+                <div class="setting-row"><div><div class="setting-label">GitHub Backup</div></div><div class="setting-value" style="color:var(--kiwi)">3:30 AM ET daily</div></div>
+                <div class="setting-row"><div><div class="setting-label">Auto Updates</div></div><div class="setting-value" style="color:var(--amber)">Disabled</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="settings-group">
+                <div class="settings-group-title">👤 User Preferences</div>
+                <div class="setting-row"><div><div class="setting-label">Timezone</div></div><div class="setting-value">America/New_York</div></div>
+                <div class="setting-row"><div><div class="setting-label">Location</div></div><div class="setting-value">Brooklyn, NY</div></div>
+                <div class="setting-row"><div><div class="setting-label">Morning Briefing</div></div><div class="setting-value">6:30 AM ET daily</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContainer"></div>
+</div>
+
+<!-- Command Palette -->
+<div class="cmd-palette" id="cmdPalette" onclick="if(event.target===this)closeCmdPalette()">
+  <div class="cmd-box">
+    <div class="cmd-input-wrap">
+      <span>🔍</span>
+      <input type="text" class="cmd-input" id="cmdInput" placeholder="Search pages, agents, actions..." oninput="filterCommands()">
+    </div>
+    <div class="cmd-results" id="cmdResults"></div>
   </div>
 </div>
 
-<div class="main">
-  
-  <!-- Organizational Structure -->
-  <div class="focus-section">
-    <div class="focus-title">🏢 Organizational Structure</div>
-    <div class="org-structure">
-      
-      <div class="leadership-level">
-        <div class="leadership-person">👤 Alex</div>
-        <div class="leadership-role">Founder & CEO</div>
+<!-- Chat Bubble -->
+<div class="chat-bubble">
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div class="chat-header-avatar">🥝</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">Kiwi Klase</div>
+        <div class="chat-header-status">Online — COO</div>
       </div>
-      
-      <div class="arrow">⬇</div>
-      
-      <div class="leadership-level">
-        <div class="leadership-person">🥝 Kiwi Klase</div>
-        <div class="leadership-role">Chief of Staff / COO</div>
-      </div>
-      
-      <div class="arrow">⬇</div>
-      
-      <h4 style="font-size: 16px; margin-bottom: 12px; color: rgba(255,255,255,0.8);">C-Suite Team (9 Agents)</h4>
-      
-      <div class="team-section">
-        <div class="team-member" style="border-left-color: #3B82F6;">
-          <div class="team-avatar">⚡</div>
-          <div class="team-name">Bolt</div>
-          <div class="team-role">Chief Technology Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #F59E0B;">
-          <div class="team-avatar">💡</div>
-          <div class="team-name">Spark</div>
-          <div class="team-role">Chief Strategy Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #EC4899;">
-          <div class="team-avatar">🎙️</div>
-          <div class="team-name">Echo</div>
-          <div class="team-role">Chief Marketing Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #06B6D4;">
-          <div class="team-avatar">🔍</div>
-          <div class="team-name">Lens</div>
-          <div class="team-role">Chief Revenue Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #FF6B35;">
-          <div class="team-avatar">🎨</div>
-          <div class="team-name">Pixel</div>
-          <div class="team-role">Chief Design Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #DC2626;">
-          <div class="team-avatar">⚖️</div>
-          <div class="team-name">Counsel</div>
-          <div class="team-role">Chief Legal Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #8B5CF6;">
-          <div class="team-avatar">🔄</div>
-          <div class="team-name">Relay</div>
-          <div class="team-role">Chief Information Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #10B981;">
-          <div class="team-avatar">📊</div>
-          <div class="team-name">Ledger</div>
-          <div class="team-role">Chief Financial Officer</div>
-        </div>
-        <div class="team-member" style="border-left-color: #6366F1;">
-          <div class="team-avatar">🛡️</div>
-          <div class="team-name">Shield</div>
-          <div class="team-role">Chief Information Security Officer</div>
-        </div>
-      </div>
-      
+      <button class="modal-close" onclick="toggleChat()">×</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg from-kiwi">Hey Alex! 👋 I'm here and ready. What do you need?<div class="chat-msg-time">Just now</div></div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Message Kiwi..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="chat-send" onclick="sendChat()">→</button>
     </div>
   </div>
-
-  <!-- Clean Slate Status -->
-  <div class="focus-section">
-    <div class="focus-title">📦 Project Status</div>
-    <div class="clean-slate">
-      <div class="clean-slate-icon">✨</div>
-      <h3>Clean Slate</h3>
-      <p>
-        All previous projects have been removed per your request. 
-        The organizational structure is now clean with Alex → Kiwi → 9 C-Suite agents, 
-        ready to work on new initiatives when you define them.
-      </p>
-    </div>
-  </div>
-
+  <button class="chat-toggle" onclick="toggleChat()" title="Chat with Kiwi">🥝</button>
 </div>
 
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════
+// MISSION CONTROL v3 — Full Interactive Engine
+// ══════════════════════════════════════
+
+// ── DATA MODELS ──
+const AGENTS = {
+  alex: { emoji:'👤', name:'Alex', role:'CEO / Founder', type:'Human', status:'Active', statusColor:'amber', assignment:'Vision, approvals, Gucci W2', lastActive:'Today', email:'—', details:'Gucci Manager of Supply Chain (Americas). Oversees all Vektor strategic decisions. Available ~5hrs/wk for side ventures.', skills:['Strategy','Decision-making','Supply Chain','Investing'] },
+  kiwi: { emoji:'🥝', name:'Kiwi Klase', role:'COO / Chief of Staff', type:'AI Agent', status:'Online', statusColor:'green', assignment:'Mission Control, team coordination, daily ops', lastActive:'Now', email:'kiwiklase@agentmail.to', details:'Primary AI agent. Coordinates all sub-agents, manages daily operations, handles 80% of execution async. Built on Claude via OpenClaw.', skills:['Coordination','Writing','Research','Code Gen','Scheduling'] },
+  bolt: { emoji:'⚡', name:'Bolt', role:'CTO / Engineering', type:'Sub-Agent', status:'Active', statusColor:'green', assignment:'Mission Control v3 rebuild', lastActive:'Today', details:'Engineering specialist. Builds dashboards, landing pages, tools, automation scripts.', skills:['HTML/CSS/JS','System Architecture','Automation','Deployment'] },
+  spark: { emoji:'✨', name:'Spark', role:'CSO / Strategy', type:'Sub-Agent', status:'Idle', statusColor:'muted', assignment:'Revenue Sprint architecture', lastActive:'Mar 25', details:'Strategic planning agent. Created the Revenue Sprint business plan with 3-tier pricing and 9 service packages.', skills:['Business Strategy','Financial Modeling','Market Analysis','Planning'] },
+  echo: { emoji:'🎙️', name:'Echo', role:'CMO / Content & Marketing', type:'Sub-Agent', status:'Complete', statusColor:'green', assignment:'Cold email campaign (delivered)', lastActive:'Mar 27', details:'Content and marketing specialist. Delivered 3 cold email templates targeting 250 prospects.', skills:['Copywriting','Email Marketing','Content Strategy','Brand Voice'] },
+  lens: { emoji:'🔍', name:'Lens', role:'CRO / Research', type:'Sub-Agent', status:'Complete', statusColor:'green', assignment:'50 prospects + market research', lastActive:'Mar 27', details:'Research and revenue intelligence. Compiled 50 verified business prospects, completed Upwork/Fiverr competitive analysis.', skills:['Market Research','Lead Generation','Competitive Analysis','Data Collection'] },
+  pixel: { emoji:'🎨', name:'Pixel', role:'CDO / Design', type:'Sub-Agent', status:'Delivered', statusColor:'blue', assignment:'Vektor branding v3 (10 concepts)', lastActive:'Mar 26', details:'Design and branding specialist. Created 10 Vektor brand concepts in v3.', skills:['Brand Design','UI/UX','Visual Identity','Creative Direction'] },
+  counsel: { emoji:'⚖️', name:'Counsel', role:'CLO / Legal', type:'Sub-Agent', status:'Standby', statusColor:'muted', assignment:'Awaiting KlaseCo.com legal review', lastActive:'—', details:'Legal compliance agent. On standby for Terms of Service, Privacy Policy review.', skills:['Legal Review','Compliance','Terms of Service','Privacy Policy'] },
+  relay: { emoji:'🔗', name:'Relay', role:'CIO / Infrastructure', type:'Sub-Agent', status:'Complete', statusColor:'green', assignment:'Sonnet fallback chain, cron jobs', lastActive:'Mar 27', details:'Infrastructure specialist. Configured model fallback chain (Opus→Sonnet→Haiku), set up cron jobs.', skills:['DevOps','System Config','Cron Jobs','Model Management'] },
+  ledger: { emoji:'📊', name:'Ledger', role:'CFO / Finance', type:'Sub-Agent', status:'Idle', statusColor:'muted', assignment:'Revenue Sprint financial modeling', lastActive:'—', details:'Financial tracking and modeling agent.', skills:['Financial Modeling','Bookkeeping','Revenue Tracking','Forecasting'] },
+  shield: { emoji:'🛡️', name:'Shield', role:'CISO / Security', type:'Sub-Agent', status:'Complete', statusColor:'green', assignment:'Email security hardening', lastActive:'Mar 25', details:'Security specialist. Implemented email security rules, established Telegram-only command trust.', skills:['Security Hardening','Access Control','Threat Assessment','Policy'] }
+};
+
+const PROJECTS = [
+  { name:'Revenue Sprint', icon:'💰', status:'Executing', statusColor:'green', progress:35, desc:'Turn $200 into $10K-$20K in 3-6 months via AI service arbitrage, faceless content, and digital products.', team:'Lens, Echo, Bolt, Kiwi', target:'$3K-$6K/mo by month 3', streams:[{name:'AI Service Arbitrage',progress:40,color:'green',notes:'Cold emails done, 50 prospects, landing page live'},{name:'Faceless Content',progress:15,color:'amber',notes:'Niche research complete, pipeline setup needed'},{name:'Digital Product',progress:10,color:'purple',notes:'"How to Hire an AI Employee" — not started'}] },
+  { name:'KlaseCo.com', icon:'🌐', status:'Final Polish', statusColor:'blue', progress:80, desc:'Public documentation site rebranded to TheVektorCorp.com. V1 scaffold built with 16 pages.', team:'Bolt, Kiwi, Counsel', target:'Launch by April 2026', blocked:'GitHub Pages auth for deployment', remaining:'Voice polish, team page, legal review' },
+  { name:'Gucci / Kering', icon:'👔', status:'Active — W2', statusColor:'amber', progress:100, desc:'Manager, Supply Chain — Americas Region. Income base.', team:'Alex (solo)', target:'DEMNA FW26 rollout, CFOO reporting', notes:'Mon-Fri 9am-6pm, office 4 days/wk' }
+];
+
+const VENTURES = [
+  { name:'Vektor AI Services', icon:'🤖', status:'Active — Primary', pricing:'$149 – $599/project', rate:'$85/hr → $125/hr', prospects:'50 verified', checklist:['✅ Cold email templates (3)','✅ Landing page built','✅ Prospect list (46/50 verified)','✅ Upwork competitive research','⏳ Business plan complete'] },
+  { name:'Faceless Content Channels', icon:'📹', status:'Research Phase', niches:'Finance, Sleep, Motivational, Heartwarming', platform:'YouTube + TikTok', checklist:['✅ Niche research complete','✅ Recommended: Finance first','⏳ Pipeline setup needed','⏳ First video not produced'] },
+  { name:'Digital Product', icon:'📖', status:'Planned', title:'"How to Hire an AI Employee"', format:'Ebook / Course', checklist:['⏳ Not yet started','📝 5 journal entries written','📝 Based on lived experience'] }
+];
+
+// ── NAVIGATION ──
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() { navigateTo(item.dataset.page); closeSidebar(); });
+});
+
+function navigateTo(page) {
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var navItem = document.querySelector('.nav-item[data-page="'+page+'"]');
+  if (navItem) navItem.classList.add('active');
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  var pageEl = document.getElementById('page-'+page);
+  if (pageEl) pageEl.classList.add('active');
+  var titles = { dashboard:'Dashboard', projects:'Projects', ventures:'Ventures', team:'Team', operations:'Operations Hub', research:'Research & Intel', finances:'Finances', knowledge:'Knowledge Base', contacts:'Contacts & Network', settings:'Settings' };
+  document.getElementById('pageTitle').textContent = titles[page] || page;
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
+
+// ── CLOCK ──
+function updateClock() {
+  var now = new Date();
+  document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'America/New_York' }) + ' ET';
+}
+updateClock(); setInterval(updateClock, 1000);
+
+function updateDaysRunning() {
+  var days = Math.floor((new Date() - new Date('2026-03-22')) / 86400000) + 1;
+  var el = document.getElementById('daysRunning');
+  if (el) el.textContent = days;
+}
+updateDaysRunning();
+
+// ── TAB SWITCHING ──
+function switchProjectTab(el, tab) {
+  el.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('projects-active').style.display = tab === 'active' ? 'flex' : 'none';
+  document.getElementById('projects-archived').style.display = tab === 'archived' ? 'flex' : 'none';
+}
+function switchOpsTab(el, tab) {
+  el.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  ['tasks','automations','logs','health'].forEach(function(t) { var s=document.getElementById('ops-'+t); if(s) s.style.display=t===tab?'block':'none'; });
+}
+function switchResearchTab(el, tab) {
+  el.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  ['market','competitors','industry','research'].forEach(function(t) { var s=document.getElementById('research-'+t); if(s) s.style.display=t===tab?'block':'none'; });
+}
+function switchContactTab(el, tab) {
+  el.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  ['internal','external','channels'].forEach(function(t) { var s=document.getElementById('contacts-'+t); if(s) s.style.display=t===tab?'block':'none'; });
+}
+
+function filterKB() {
+  var q = document.getElementById('kbSearch').value.toLowerCase();
+  document.querySelectorAll('.kb-item').forEach(function(item) {
+    var text = item.textContent.toLowerCase() + (item.dataset.tags || '');
+    item.style.display = text.includes(q) ? 'flex' : 'none';
+  });
+}
+
+// ── MARKET DATA ──
+async function refreshMarket() {
+  var btn = document.getElementById('marketRefreshBtn');
+  if (btn) btn.textContent = '⏳';
+  try {
+    var res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true');
+    if (res.ok) {
+      var data = await res.json();
+      if (data.bitcoin) {
+        var p = '$' + Math.round(data.bitcoin.usd).toLocaleString();
+        var c = (data.bitcoin.usd_24h_change || 0).toFixed(2);
+        var col = c >= 0 ? 'var(--kiwi)' : 'var(--red)';
+        var s = c >= 0 ? '+' : '';
+        setTicker('btcPrice', p); setTicker('btcChange', s+c+'%', col);
+        setTicker('btcPrice2', p); setTicker('btcChange2', s+c+'%', col);
+      }
+      if (data.ethereum) {
+        var pe = '$' + Math.round(data.ethereum.usd).toLocaleString();
+        var ce = (data.ethereum.usd_24h_change || 0).toFixed(2);
+        var cole = ce >= 0 ? 'var(--kiwi)' : 'var(--red)';
+        setTicker('ethPrice', pe); setTicker('ethChange', (ce>=0?'+':'')+ce+'%', cole);
+      }
+    }
+  } catch(e) {}
+  var day = new Date().getDay();
+  if (day === 0 || day === 6) {
+    setTicker('sp500Price','Closed'); setTicker('sp500Change','Weekend','var(--text-tertiary)');
+    setTicker('nasdaqPrice','Closed'); setTicker('nasdaqChange','Weekend','var(--text-tertiary)');
+    setTicker('sp500Price2','Closed'); setTicker('sp500Change2','Weekend','var(--text-tertiary)');
+    setTicker('nasdaqPrice2','Closed'); setTicker('nasdaqChange2','Weekend','var(--text-tertiary)');
+  } else {
+    setTicker('sp500Price','~5,700'); setTicker('sp500Change','Intraday','var(--text-tertiary)');
+    setTicker('nasdaqPrice','~17,800'); setTicker('nasdaqChange','Intraday','var(--text-tertiary)');
+    setTicker('sp500Price2','~5,700'); setTicker('sp500Change2','Intraday','var(--text-tertiary)');
+    setTicker('nasdaqPrice2','~17,800'); setTicker('nasdaqChange2','Intraday','var(--text-tertiary)');
+  }
+  if (btn) { btn.textContent = '✓ Live'; setTimeout(function(){ if(btn) btn.textContent = 'Live'; }, 2000); }
+}
+function setTicker(id, value, color) { var el = document.getElementById(id); if (el) { el.textContent = value; if (color) el.style.color = color; } }
+refreshMarket(); setInterval(refreshMarket, 60000);
+
+// ═══════════════════════════════════
+// MODAL SYSTEM
+// ═══════════════════════════════════
+function openModal(type, data) {
+  var overlay = document.getElementById('modalOverlay');
+  var container = document.getElementById('modalContainer');
+  var html = '';
+  data = data || {};
+
+  if (type === 'agentDetail') {
+    html = '<div class="modal-header"><div class="modal-title">'+data.emoji+' '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap"><span class="badge '+data.statusColor+'">'+data.status+'</span><span class="badge muted">'+data.type+'</span></div>'
+      + '<div style="font-size:14px;font-weight:600;margin-bottom:4px">'+data.role+'</div>'
+      + '<div style="font-size:13px;color:var(--text-tertiary);line-height:1.6;margin-bottom:16px">'+(data.details||'')+'</div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Current Assignment</div><div class="modal-detail-value">'+data.assignment+'</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Last Active</div><div class="modal-detail-value">'+data.lastActive+'</div></div>'
+      + (data.email ? '<div class="modal-detail-row"><div class="modal-detail-label">Email</div><div class="modal-detail-value">'+data.email+'</div></div>' : '')
+      + (data.skills ? '<div style="margin-top:16px"><div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Skills</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+data.skills.map(function(s){return '<span class="badge muted">'+s+'</span>';}).join('')+'</div></div>' : '')
+      + '</div>'
+      + '<div class="modal-footer">'
+      + (data.type !== 'Human' ? '<button class="action-btn" onclick="sendChatMsg(\'Assign task to '+data.name+'\');closeModal();toggleChat()">💬 Assign via Kiwi</button>' : '')
+      + '<button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else if (type === 'projectDetail') {
+    html = '<div class="modal-header"><div class="modal-title">'+data.icon+' '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<span class="badge '+data.statusColor+'" style="margin-bottom:12px">'+data.status+'</span>'
+      + '<div style="font-size:13px;color:var(--text-tertiary);line-height:1.6;margin-bottom:16px">'+data.desc+'</div>'
+      + '<div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill '+data.statusColor+'" style="width:'+data.progress+'%"></div></div>'
+      + '<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:16px">'+data.progress+'% complete</div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Team</div><div class="modal-detail-value">'+data.team+'</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Target</div><div class="modal-detail-value">'+data.target+'</div></div>'
+      + (data.blocked ? '<div class="modal-detail-row"><div class="modal-detail-label">Blocked</div><div class="modal-detail-value" style="color:var(--red)">'+data.blocked+'</div></div>' : '')
+      + (data.remaining ? '<div class="modal-detail-row"><div class="modal-detail-label">Remaining</div><div class="modal-detail-value">'+data.remaining+'</div></div>' : '')
+      + (data.streams ? '<div style="margin-top:16px"><div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Revenue Streams</div>'+data.streams.map(function(s){return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">'+s.name+'</span><span style="font-size:11px;color:var(--text-tertiary)">'+s.progress+'%</span></div><div class="progress-bar"><div class="progress-fill '+s.color+'" style="width:'+s.progress+'%"></div></div><div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">'+s.notes+'</div></div>';}).join('')+'</div>' : '')
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Update on '+data.name+'\');closeModal();toggleChat()">💬 Ask Kiwi</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else if (type === 'addTask') {
+    html = '<div class="modal-header"><div class="modal-title">➕ New Task</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" placeholder="What needs to be done?" id="newTaskName"></div>'
+      + '<div class="form-row"><div class="form-group"><label class="form-label">Assign To</label><select class="form-select"><option>🥝 Kiwi (auto-route)</option><option>⚡ Bolt</option><option>✨ Spark</option><option>🎙️ Echo</option><option>🔍 Lens</option><option>🎨 Pixel</option><option>⚖️ Counsel</option><option>🔗 Relay</option><option>📊 Ledger</option><option>🛡️ Shield</option></select></div>'
+      + '<div class="form-group"><label class="form-label">Priority</label><select class="form-select"><option>P0 — Critical</option><option>P1 — High</option><option selected>P2 — Normal</option><option>P3 — Low</option></select></div></div>'
+      + '<div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Details..."></textarea></div>'
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn primary" onclick="var n=document.getElementById(\'newTaskName\').value;if(n){showToast(\'Task created: \'+n,\'success\');closeModal();}else{showToast(\'Enter a task name\',\'error\');}">🚀 Create Task</button></div>';
+  }
+  else if (type === 'taskDetail') {
+    html = '<div class="modal-header"><div class="modal-title">📋 '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<div class="form-group"><label class="form-label">Task Name</label><input class="form-input" value="'+data.name+'"></div>'
+      + '<div class="form-row"><div class="form-group"><label class="form-label">Assigned To</label><input class="form-input" value="'+data.agent+'"></div>'
+      + '<div class="form-group"><label class="form-label">Priority</label><select class="form-select"><option'+(data.priority==='P0'?' selected':'')+'>P0 — Critical</option><option'+(data.priority==='P1'?' selected':'')+'>P1 — High</option><option'+(data.priority==='P2'?' selected':'')+'>P2 — Normal</option><option>P3 — Low</option></select></div></div>'
+      + '<div class="form-row"><div class="form-group"><label class="form-label">Status</label><select class="form-select"><option'+(data.status==='active'?' selected':'')+'>Active</option><option'+(data.status==='queued'?' selected':'')+'>Queued</option><option>Complete</option><option>Blocked</option></select></div>'
+      + '<div class="form-group"><label class="form-label">Due Date</label><input class="form-input" type="date"></div></div>'
+      + '<div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea">'+(data.notes||'')+'</textarea></div>'
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn danger" onclick="showToast(\'Task archived\',\'info\');closeModal()">🗑️ Archive</button><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn primary" onclick="showToast(\'Task updated\',\'success\');closeModal()">💾 Save</button></div>';
+  }
+  else if (type === 'ventureDetail') {
+    html = '<div class="modal-header"><div class="modal-title">'+data.icon+' '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<span class="badge '+(data.status.includes('Active')?'green':data.status.includes('Research')?'purple':'blue')+'">'+data.status+'</span>'
+      + (data.pricing ? '<div class="modal-detail-row"><div class="modal-detail-label">Pricing</div><div class="modal-detail-value">'+data.pricing+'</div></div>' : '')
+      + (data.rate ? '<div class="modal-detail-row"><div class="modal-detail-label">Rate</div><div class="modal-detail-value">'+data.rate+'</div></div>' : '')
+      + (data.prospects ? '<div class="modal-detail-row"><div class="modal-detail-label">Prospects</div><div class="modal-detail-value">'+data.prospects+'</div></div>' : '')
+      + (data.niches ? '<div class="modal-detail-row"><div class="modal-detail-label">Niches</div><div class="modal-detail-value">'+data.niches+'</div></div>' : '')
+      + (data.checklist ? '<div style="margin-top:16px">'+data.checklist.map(function(c){return '<div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03)">'+c+'</div>';}).join('')+'</div>' : '')
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Update on '+data.name+'\');closeModal();toggleChat()">💬 Ask Kiwi</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else if (type === 'editSetting') {
+    html = '<div class="modal-header"><div class="modal-title">✏️ Edit: '+data.label+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body"><div class="form-group"><label class="form-label">'+data.label+'</label><input class="form-input" value="'+data.value+'"></div>'
+      + '<div style="font-size:12px;color:var(--text-tertiary);margin-top:8px">Changes queued for Kiwi to process.</div></div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn primary" onclick="showToast(\'Setting updated: '+data.label+'\',\'success\');closeModal()">Save</button></div>';
+  }
+  else if (type === 'addProject' || type === 'addVenture' || type === 'addExpense' || type === 'addContact' || type === 'addKB' || type === 'addResearch' || type === 'addAgent' || type === 'addEvent' || type === 'addCron') {
+    var titles = {addProject:'📁 New Project',addVenture:'🚀 New Venture',addExpense:'💸 Log Expense',addContact:'📇 Add Contact',addKB:'📚 Add Document',addResearch:'🔍 Add Intel',addAgent:'🤖 Add Agent',addEvent:'📅 Add Event',addCron:'⏰ Add Cron Job'};
+    html = '<div class="modal-header"><div class="modal-title">'+(titles[type]||type)+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<div class="form-group"><label class="form-label">Name / Title</label><input class="form-input" placeholder="Enter name..." id="genericFormName"></div>'
+      + '<div class="form-group"><label class="form-label">Description / Details</label><textarea class="form-textarea" placeholder="Details..."></textarea></div>'
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn primary" onclick="var n=document.getElementById(\'genericFormName\').value||\'Item\';showToast(n+\' created — Kiwi will process\',\'success\');closeModal()">Create</button></div>';
+  }
+  else if (type === 'reactivateProject') {
+    html = '<div class="modal-header"><div class="modal-title">🔄 Reactivate: '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body"><div style="font-size:14px;margin-bottom:16px">Reactivate <strong>'+data.name+'</strong>?</div>'
+      + '<div class="form-group"><label class="form-label">Rationale</label><textarea class="form-textarea" placeholder="Why bring this back?"></textarea></div></div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="closeModal()">Cancel</button><button class="action-btn primary" onclick="showToast(\''+data.name+' reactivated\',\'success\');closeModal()">Reactivate</button></div>';
+  }
+  else if (type === 'intelDetail') {
+    html = '<div class="modal-header"><div class="modal-title">📰 '+data.source+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body"><div style="font-size:16px;font-weight:700;margin-bottom:12px">'+data.headline+'</div>'
+      + '<div style="font-size:13px;color:var(--text-tertiary);line-height:1.6">'+data.summary+'</div></div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Research: '+data.headline+'\');closeModal();toggleChat()">🔍 Research More</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else if (type === 'kbDetail') {
+    html = '<div class="modal-header"><div class="modal-title">'+data.icon+' '+data.title+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body"><div style="font-size:13px;color:var(--text-tertiary);margin-bottom:16px">'+data.desc+'</div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Path</div><div class="modal-detail-value" style="color:var(--cyan)">'+data.path+'</div></div>'
+      + '<div style="margin-top:16px;padding:16px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;color:var(--text-tertiary)">📝 Tell Kiwi what changes to make via chat or Telegram.</div></div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Show me '+data.path+'\');closeModal();toggleChat()">📖 View</button><button class="action-btn" onclick="sendChatMsg(\'Edit '+data.path+'\');closeModal();toggleChat()">✏️ Edit via Kiwi</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else if (type === 'cronDetail') {
+    html = '<div class="modal-header"><div class="modal-title">⏰ '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Schedule</div><div class="modal-detail-value">'+data.schedule+'</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Last Run</div><div class="modal-detail-value">'+data.lastRun+'</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Status</div><div class="modal-detail-value"><span class="badge green">Active</span></div></div>'
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn danger" onclick="showToast(\'Cron job paused\',\'info\');closeModal()">⏸ Pause</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else if (type === 'expenseBreakdown') {
+    html = '<div class="modal-header"><div class="modal-title">💸 Expense Breakdown</div><button class="modal-close" onclick="closeModal()">×</button></div>'
+      + '<div class="modal-body">'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">OpenClaw Pro</div><div class="modal-detail-value">$200/mo</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Mac mini</div><div class="modal-detail-value">$0 (owned)</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">GitHub</div><div class="modal-detail-value">$0 (free tier)</div></div>'
+      + '<div class="modal-detail-row"><div class="modal-detail-label">Domain</div><div class="modal-detail-value">TBD (planned)</div></div>'
+      + '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)"><div class="modal-detail-row"><div class="modal-detail-label" style="font-weight:700;color:var(--text-primary)">Total Monthly</div><div class="modal-detail-value" style="font-weight:700;color:var(--amber);font-size:16px">$200/mo</div></div></div>'
+      + '</div>'
+      + '<div class="modal-footer"><button class="action-btn" onclick="openModal(\'addExpense\')">+ Add Expense</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+  }
+  else {
+    html = '<div class="modal-header"><div class="modal-title">Info</div><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body"><p>'+type+'</p></div>';
+  }
+
+  container.innerHTML = html;
+  overlay.classList.add('show');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+// ═══════════════════════════════════
+// COMMAND PALETTE
+// ═══════════════════════════════════
+var CMD_ITEMS = [
+  { icon:'📊', label:'Dashboard', action:function(){navigateTo('dashboard')} },
+  { icon:'📁', label:'Projects', action:function(){navigateTo('projects')} },
+  { icon:'🚀', label:'Ventures', action:function(){navigateTo('ventures')} },
+  { icon:'🏢', label:'Team', action:function(){navigateTo('team')} },
+  { icon:'📇', label:'Contacts', action:function(){navigateTo('contacts')} },
+  { icon:'⚙️', label:'Operations', action:function(){navigateTo('operations')} },
+  { icon:'🔍', label:'Research', action:function(){navigateTo('research')} },
+  { icon:'💰', label:'Finances', action:function(){navigateTo('finances')} },
+  { icon:'📚', label:'Knowledge Base', action:function(){navigateTo('knowledge')} },
+  { icon:'🔧', label:'Settings', action:function(){navigateTo('settings')} },
+  { icon:'➕', label:'New Task', hint:'Create a task', action:function(){closeCmdPalette();openModal('addTask')} },
+  { icon:'💬', label:'Message Kiwi', hint:'Open chat', action:function(){closeCmdPalette();toggleChat()} }
+];
+// Add agents to command palette
+Object.keys(AGENTS).forEach(function(key) {
+  var a = AGENTS[key];
+  CMD_ITEMS.push({ icon:a.emoji, label:a.name, hint:a.role, action:function(){closeCmdPalette();openModal('agentDetail',a)} });
+});
+
+function openCmdPalette() {
+  document.getElementById('cmdPalette').classList.add('show');
+  var input = document.getElementById('cmdInput');
+  input.value = '';
+  input.focus();
+  renderCommands('');
+}
+function closeCmdPalette() { document.getElementById('cmdPalette').classList.remove('show'); }
+function filterCommands() { renderCommands(document.getElementById('cmdInput').value.toLowerCase()); }
+
+var CMD_ITEMS_FILTERED = [];
+function renderCommands(q) {
+  var filtered = q ? CMD_ITEMS.filter(function(c) { return (c.label+' '+(c.hint||'')).toLowerCase().indexOf(q) !== -1; }) : CMD_ITEMS;
+  CMD_ITEMS_FILTERED = filtered.slice(0,12);
+  document.getElementById('cmdResults').innerHTML = CMD_ITEMS_FILTERED.map(function(c,i) {
+    return '<div class="cmd-item'+(i===0?' selected':'')+'" onclick="CMD_ITEMS_FILTERED['+i+'].action();closeCmdPalette()"><span class="cmd-icon">'+c.icon+'</span><span class="cmd-label">'+c.label+'</span>'+(c.hint?'<span class="cmd-hint">'+c.hint+'</span>':'')+'</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// CHAT SYSTEM
+// ═══════════════════════════════════
+var chatOpen = false;
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+  if (chatOpen) document.getElementById('chatInput').focus();
+}
+
+function sendChat() {
+  var input = document.getElementById('chatInput');
+  var msg = input.value.trim();
+  if (!msg) return;
+  addChatMsg(msg, 'from-user');
+  input.value = '';
+  setTimeout(function() {
+    var responses = [
+      'Got it! I\'ll handle "'+msg+'" and update you shortly. 🥝',
+      'On it. I\'ll coordinate with the team and get back to you.',
+      'Understood — queuing this up now. Anything else?',
+      'Roger that. I\'ll process this and send you a status update via Telegram.',
+      'Great call. Let me work on this and circle back. ⚡'
+    ];
+    addChatMsg(responses[Math.floor(Math.random()*responses.length)], 'from-kiwi');
+  }, 800 + Math.random()*700);
+}
+
+function sendChatMsg(msg) {
+  document.getElementById('chatInput').value = msg;
+  if (!chatOpen) toggleChat();
+}
+
+function addChatMsg(text, cls) {
+  var container = document.getElementById('chatMessages');
+  var now = new Date();
+  var time = now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
+  var div = document.createElement('div');
+  div.className = 'chat-msg ' + cls;
+  div.innerHTML = text + '<div class="chat-msg-time">' + time + '</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ═══════════════════════════════════
+// TOAST NOTIFICATIONS
+// ═══════════════════════════════════
+function showToast(message, type) {
+  type = type || 'info';
+  var container = document.getElementById('toastContainer');
+  var icons = { success:'✅', error:'❌', info:'ℹ️' };
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = '<span>'+(icons[type]||'ℹ️')+'</span><span>'+message+'</span>';
+  container.appendChild(toast);
+  setTimeout(function() { toast.style.opacity='0'; toast.style.transform='translateX(20px)'; setTimeout(function(){ toast.remove(); }, 300); }, 4000);
+}
+
+// ═══════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('cmdPalette').classList.contains('show')) { closeCmdPalette(); return; }
+    if (document.getElementById('modalOverlay').classList.contains('show')) { closeModal(); return; }
+    if (chatOpen) { toggleChat(); return; }
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openCmdPalette(); return; }
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.metaKey || e.ctrlKey) {
+    switch(e.key) {
+      case '1': e.preventDefault(); navigateTo('dashboard'); break;
+      case '2': e.preventDefault(); navigateTo('projects'); break;
+      case '3': e.preventDefault(); navigateTo('ventures'); break;
+      case '4': e.preventDefault(); navigateTo('team'); break;
+      case '5': e.preventDefault(); navigateTo('operations'); break;
+      case '6': e.preventDefault(); navigateTo('research'); break;
+      case '7': e.preventDefault(); navigateTo('finances'); break;
+      case '8': e.preventDefault(); navigateTo('knowledge'); break;
+      case '9': e.preventDefault(); navigateTo('contacts'); break;
+      case '0': e.preventDefault(); navigateTo('settings'); break;
+    }
+  }
+});
+
+// Today's date
+var todayEl = document.getElementById('todayDate');
+if (todayEl) {
+  todayEl.textContent = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', timeZone:'America/New_York' });
+}
+
+// Welcome toast
+setTimeout(function(){ showToast('Mission Control v3 loaded — Full interactivity enabled','success'); }, 500);
+</script>
 </body>
 </html>
