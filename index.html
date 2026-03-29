@@ -2523,7 +2523,77 @@ function navigateTo(page) {
   if (pageEl) pageEl.classList.add('active');
   var titles = { dashboard:'Dashboard', projects:'Projects', ventures:'Ventures', team:'Team', operations:'Operations Hub', research:'Research & Intel', finances:'Finances', knowledge:'Knowledge Base', contacts:'Contacts & Network', settings:'Settings' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
+  
+  // Load real-time data for specific pages
+  if (page === 'operations') {
+    loadCronData();
+  }
 }
+
+// ── REAL-TIME DATA LOADING ──
+async function loadCronData() {
+  try {
+    const response = await fetch('./cron-data.json?' + Date.now()); // Cache bust
+    if (!response.ok) {
+      console.error('Failed to load cron data:', response.status);
+      return;
+    }
+    
+    const data = await response.json();
+    updateCronTable(data);
+  } catch (error) {
+    console.error('Error loading cron data:', error);
+  }
+}
+
+function updateCronTable(data) {
+  const tbody = document.querySelector('#page-operations .table-wrap tbody');
+  if (!tbody) return;
+  
+  tbody.innerHTML = '';
+  
+  data.jobs.forEach(job => {
+    const row = document.createElement('tr');
+    row.className = 'clickable-row';
+    row.onclick = function() {
+      openModal('cronDetail', {
+        name: job.name,
+        schedule: job.schedule,
+        lastRun: job.lastRun,
+        nextRun: job.nextRun,
+        status: job.status.text
+      });
+    };
+    
+    const statusClass = job.status.color === 'green' ? 'green' : 
+                       job.status.color === 'blue' ? 'blue' : 
+                       job.status.color === 'red' ? 'red' : 'gray';
+    
+    row.innerHTML = `
+      <td>${job.name}</td>
+      <td><code style="color:var(--cyan);font-size:12px">${job.schedule}</code></td>
+      <td><span class="badge ${statusClass}">${job.status.text}</span></td>
+      <td>${job.lastRun}</td>
+      <td><span class="card-action">View →</span></td>
+    `;
+    
+    tbody.appendChild(row);
+  });
+  
+  // Update summary stats
+  const summaryEl = document.querySelector('#page-operations .card-header .card-title');
+  if (summaryEl) {
+    summaryEl.innerHTML = `⏰ Active Cron Jobs (${data.summary.running}/${data.totalJobs} running)`;
+  }
+}
+
+// Auto-refresh cron data every 2 minutes when on operations page
+setInterval(() => {
+  const currentPage = document.querySelector('.page.active');
+  if (currentPage && currentPage.id === 'page-operations') {
+    loadCronData();
+  }
+}, 120000);
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
@@ -2798,254 +2868,118 @@ function renderCommands(q) {
 // ═══════════════════════════════════
 var chatOpen = false;
 // ═══════════════════════════════════
-// KIWI CHAT — OpenClaw Gateway Integration
+// KIWI CHAT — Smart Gateway Integration
 // ═══════════════════════════════════
+// Strategy:
+// - On localhost/gateway (127.0.0.1:18789): embed gateway chat iframe
+// - On GitHub Pages or remote: show Telegram link + instructions
+// Simple approach that actually works.
 
-// Gateway config — auto-detect or set manually
+var IS_LOCAL = (function() {
+  var h = location.hostname;
+  return h === '127.0.0.1' || h === 'localhost' || h === '0.0.0.0' || location.port === '18789';
+})();
+
+var GATEWAY_BASE = 'http://127.0.0.1:18789';
+
 var GATEWAY_TOKEN = (function() {
   var h = location.hash; var m = h.match(/token=([a-f0-9]+)/);
-  return m ? m[1] : localStorage.getItem('kiwi_gw_token') || '';
+  if (m) { localStorage.setItem('kiwi_gw_token', m[1]); return m[1]; }
+  return localStorage.getItem('kiwi_gw_token') || '';
 })();
-var GATEWAY_URL = (function() {
-  // If we're on the gateway itself, use same host
-  if (location.port === '18789') return 'ws://' + location.host;
-  // Try stored URL
-  var stored = localStorage.getItem('kiwi_gw_url');
-  if (stored) return stored;
-  // Default: local gateway
-  return 'ws://127.0.0.1:18789';
-})();
-
-var kiwiWs = null;
-var kiwiWsConnected = false;
-var kiwiPending = {};
-var kiwiReqId = 0;
-var kiwiSessionKey = 'main';
-var kiwiStream = '';
-var kiwiStreamEl = null;
-var kiwiReconnectTimer = null;
-var kiwiReconnectDelay = 2000;
-
-function kiwiGenId() { return 'mc-' + (++kiwiReqId) + '-' + Math.random().toString(36).slice(2,8); }
-
-function kiwiRpc(method, params) {
-  return new Promise(function(resolve, reject) {
-    if (!kiwiWs || kiwiWs.readyState !== WebSocket.OPEN) {
-      reject(new Error('Not connected to gateway'));
-      return;
-    }
-    var id = kiwiGenId();
-    kiwiPending[id] = { resolve: resolve, reject: reject, ts: Date.now() };
-    kiwiWs.send(JSON.stringify({ type: 'req', id: id, method: method, params: params || {} }));
-    // Timeout after 120s
-    setTimeout(function() {
-      if (kiwiPending[id]) {
-        kiwiPending[id].reject(new Error('Request timeout'));
-        delete kiwiPending[id];
-      }
-    }, 120000);
-  });
-}
 
 function kiwiSetStatus(text, color) {
   var el = document.getElementById('chatStatus');
-  if (el) {
-    el.textContent = text;
-    el.style.color = color || 'var(--kiwi)';
-    el.style.setProperty('--dot-color', color || 'var(--kiwi)');
-  }
+  if (el) { el.textContent = text; el.style.color = color || 'var(--kiwi)'; }
 }
 
-function kiwiConnect() {
-  if (kiwiWs && (kiwiWs.readyState === WebSocket.CONNECTING || kiwiWs.readyState === WebSocket.OPEN)) return;
-  if (!GATEWAY_TOKEN) {
-    kiwiSetStatus('No token — add #token=... to URL', 'var(--amber)');
-    var welcome = document.getElementById('chatWelcome');
-    if (welcome) welcome.innerHTML = '⚠️ Gateway token needed.<br><br>Open Mission Control from: <code>openclaw dashboard</code><br>or add <code>#token=YOUR_TOKEN</code> to the URL.<div class="chat-msg-time">—</div>';
-    return;
-  }
-  kiwiSetStatus('Connecting…', 'var(--amber)');
-  try {
-    kiwiWs = new WebSocket(GATEWAY_URL);
-  } catch(e) {
-    kiwiSetStatus('Connection failed', 'var(--red)');
-    kiwiScheduleReconnect();
-    return;
-  }
-  kiwiWs.addEventListener('open', function() {
-    // Authenticate with the Gateway using its connect RPC
-    kiwiRpc('connect', {
-      minProtocol: 3, maxProtocol: 3,
-      client: { id: 'webchat', version: '1.0.0', platform: 'web', mode: 'webchat', instanceId: 'mc-' + Date.now().toString(36) },
-      role: 'operator',
-      scopes: ['operator.admin','operator.read','operator.write'],
-      auth: { token: GATEWAY_TOKEN },
-      caps: ['tool-events'],
-      userAgent: 'MissionControl/1.0',
-      locale: navigator.language || 'en-US'
-    }).then(function(hello) {
-      kiwiWsConnected = true;
-      kiwiReconnectDelay = 2000;
-      kiwiSetStatus('Online — COO', 'var(--kiwi)');
-      var welcome = document.getElementById('chatWelcome');
-      if (welcome) welcome.innerHTML = 'Connected to Kiwi 🥝 — messages route to Telegram in real-time.<div class="chat-msg-time">Just now</div>';
-      // Store token for reconnection
-      if (GATEWAY_TOKEN) localStorage.setItem('kiwi_gw_token', GATEWAY_TOKEN);
-    }).catch(function(err) {
-      kiwiSetStatus('Auth failed: ' + (err.message || err), 'var(--red)');
-      var welcome = document.getElementById('chatWelcome');
-      if (welcome) welcome.innerHTML = '❌ Authentication failed. Check your token.<div class="chat-msg-time">—</div>';
-    });
-  });
-  kiwiWs.addEventListener('message', function(evt) {
-    var data;
-    try { data = JSON.parse(evt.data); } catch(e) { return; }
-    // Handle RPC responses
-    if (data.type === 'res' && data.id && kiwiPending[data.id]) {
-      var p = kiwiPending[data.id];
-      delete kiwiPending[data.id];
-      if (data.error) { p.reject(new Error(data.error.message || data.error)); }
-      else { p.resolve(data.result); }
-      return;
-    }
-    // Handle streaming events from the agent
-    if (data.type === 'event') {
-      kiwiHandleEvent(data);
-    }
-  });
-  kiwiWs.addEventListener('close', function() {
-    kiwiWsConnected = false;
-    kiwiSetStatus('Disconnected — reconnecting…', 'var(--amber)');
-    kiwiScheduleReconnect();
-  });
-  kiwiWs.addEventListener('error', function() {
-    kiwiWsConnected = false;
-    kiwiSetStatus('Connection error', 'var(--red)');
-  });
-}
+function initChatPanel() {
+  var welcome = document.getElementById('chatWelcome');
+  var inputArea = document.querySelector('.chat-input-area');
+  var messagesArea = document.getElementById('chatMessages');
 
-function kiwiScheduleReconnect() {
-  if (kiwiReconnectTimer) return;
-  kiwiReconnectTimer = setTimeout(function() {
-    kiwiReconnectTimer = null;
-    kiwiReconnectDelay = Math.min(kiwiReconnectDelay * 1.5, 30000);
-    kiwiConnect();
-  }, kiwiReconnectDelay);
-}
-
-function kiwiHandleEvent(evt) {
-  var e = evt.event || evt.name || '';
-  // Handle streaming text from agent response
-  if (e === 'chat.stream' || e === 'chat.delta') {
-    var delta = evt.data?.delta || evt.delta || '';
-    if (delta && kiwiStreamEl) {
-      kiwiStream += delta;
-      var timeStr = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
-      kiwiStreamEl.innerHTML = formatChatText(kiwiStream) + '<div class="chat-msg-time">' + timeStr + '</div>';
-      var container = document.getElementById('chatMessages');
-      container.scrollTop = container.scrollHeight;
+  if (IS_LOCAL) {
+    kiwiSetStatus('Online — Local Gateway', 'var(--kiwi)');
+    var iframeSrc = GATEWAY_BASE + '/#/chat';
+    if (GATEWAY_TOKEN) iframeSrc = GATEWAY_BASE + '/#token=' + GATEWAY_TOKEN + '/chat';
+    
+    messagesArea.innerHTML = '';
+    messagesArea.style.padding = '0';
+    messagesArea.style.display = 'flex';
+    messagesArea.style.flexDirection = 'column';
+    
+    var iframe = document.createElement('iframe');
+    iframe.src = iframeSrc;
+    iframe.style.cssText = 'flex:1;border:none;width:100%;height:100%;border-radius:0;background:var(--bg-primary);';
+    iframe.allow = 'clipboard-write';
+    iframe.id = 'kiwiChatFrame';
+    messagesArea.appendChild(iframe);
+    if (inputArea) inputArea.style.display = 'none';
+  } else {
+    kiwiSetStatus('Remote — Use Telegram', 'var(--amber)');
+    if (welcome) {
+      welcome.innerHTML = ''
+        + '<div style="text-align:center;padding:8px 0">'
+        + '<div style="font-size:32px;margin-bottom:8px">🥝</div>'
+        + '<div style="font-weight:600;margin-bottom:12px">Chat with Kiwi</div>'
+        + '</div>'
+        + '<div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">'
+        + '<strong style="color:var(--kiwi)">📱 Telegram (fastest):</strong><br>'
+        + 'Message Kiwi directly — all commands route there in real-time.'
+        + '</div>'
+        + '<div style="margin:12px 0"><a href="https://t.me/KiwiKlaseBot" target="_blank" '
+        + 'style="display:block;padding:10px 16px;background:var(--kiwi);color:#000;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;font-size:13px">'
+        + '💬 Open Telegram Chat</a></div>'
+        + '<div style="font-size:12px;color:var(--text-tertiary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px">'
+        + '<strong>🖥️ Live chat:</strong> Open from Mac mini for embedded chat:<br>'
+        + '<code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:3px;font-size:11px">http://127.0.0.1:18789</code>'
+        + '</div>'
+        + '<div class="chat-msg-time" style="margin-top:8px">Kiwi is always online via Telegram</div>';
     }
   }
-  // Handle completed message
-  if (e === 'chat.done' || e === 'chat.complete') {
-    var text = evt.data?.text || evt.text || kiwiStream || '';
-    if (text && kiwiStreamEl) {
-      var timeStr = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
-      kiwiStreamEl.innerHTML = formatChatText(text) + '<div class="chat-msg-time">' + timeStr + '</div>';
-    }
-    kiwiStream = '';
-    kiwiStreamEl = null;
-  }
-  // Handle session events (e.g. when Kiwi sends an update)
-  if (e === 'session.message' || e === 'agent.reply') {
-    var msg = evt.data?.text || evt.data?.content || '';
-    if (msg) addChatMsg(msg, 'from-kiwi');
-  }
-}
-
-function formatChatText(text) {
-  // Basic markdown: bold, italic, code, line breaks
-  return text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 4px;border-radius:3px">$1</code>')
-    .replace(/\n/g, '<br>');
 }
 
 function toggleChat() {
   chatOpen = !chatOpen;
   document.getElementById('chatPanel').classList.toggle('open', chatOpen);
   if (chatOpen) {
-    document.getElementById('chatInput').focus();
-    // Auto-connect on first open
-    if (!kiwiWs || kiwiWs.readyState === WebSocket.CLOSED) kiwiConnect();
+    var input = document.getElementById('chatInput');
+    if (input && input.offsetParent) input.focus();
   }
 }
 
 function sendChat() {
+  if (IS_LOCAL) return;
   var input = document.getElementById('chatInput');
   var msg = input.value.trim();
   if (!msg) return;
+  var encoded = encodeURIComponent(msg);
+  window.open('https://t.me/KiwiKlaseBot?text=' + encoded, '_blank');
   addChatMsg(msg, 'from-user');
+  addChatMsg('📱 Opened in Telegram — Kiwi will respond there.', 'from-kiwi');
   input.value = '';
-
-  if (!kiwiWsConnected) {
-    addChatMsg('⚠️ Not connected to Gateway. Trying to reconnect…', 'from-kiwi');
-    kiwiConnect();
-    return;
-  }
-
-  // Create streaming placeholder for Kiwi's response
-  kiwiStream = '';
-  kiwiStreamEl = document.createElement('div');
-  kiwiStreamEl.className = 'chat-msg from-kiwi';
-  kiwiStreamEl.innerHTML = '<span style="opacity:0.5">Kiwi is thinking…</span>';
-  document.getElementById('chatMessages').appendChild(kiwiStreamEl);
-  var container = document.getElementById('chatMessages');
-  container.scrollTop = container.scrollHeight;
-
-  var idempotencyKey = kiwiGenId();
-  kiwiRpc('chat.send', {
-    sessionKey: kiwiSessionKey,
-    message: msg,
-    deliver: true,
-    idempotencyKey: idempotencyKey
-  }).then(function(result) {
-    // If we get an immediate response (non-streaming), display it
-    if (result && result.text && !kiwiStream) {
-      var timeStr = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
-      kiwiStreamEl.innerHTML = formatChatText(result.text) + '<div class="chat-msg-time">' + timeStr + '</div>';
-      kiwiStreamEl = null;
-    }
-  }).catch(function(err) {
-    if (kiwiStreamEl) {
-      kiwiStreamEl.innerHTML = '❌ ' + (err.message || 'Failed to send') + '<div class="chat-msg-time">Error</div>';
-      kiwiStreamEl = null;
-    }
-  });
 }
 
 function sendChatMsg(msg) {
+  if (IS_LOCAL) { if (!chatOpen) toggleChat(); return; }
   document.getElementById('chatInput').value = msg;
   if (!chatOpen) toggleChat();
 }
 
 function addChatMsg(text, cls) {
   var container = document.getElementById('chatMessages');
-  var now = new Date();
-  var time = now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
+  if (!container) return;
+  var time = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
   var div = document.createElement('div');
   div.className = 'chat-msg ' + cls;
-  div.innerHTML = (cls === 'from-kiwi' ? formatChatText(text) : text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '<div class="chat-msg-time">' + time + '</div>';
+  var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  div.innerHTML = safe + '<div class="chat-msg-time">' + time + '</div>';
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
 
-// Auto-connect if token is available
-if (GATEWAY_TOKEN) {
-  setTimeout(kiwiConnect, 500);
-}
+setTimeout(initChatPanel, 300);
+
 
 // ═══════════════════════════════════
 // TOAST NOTIFICATIONS
