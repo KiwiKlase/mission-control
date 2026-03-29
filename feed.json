@@ -1,5 +1,65 @@
 [
   {
+    "id": "1774812607234",
+    "timestamp": "2026-03-29T19:30:07.234Z",
+    "type": "system",
+    "title": "OS Data Refresh",
+    "summary": "Mission Control operational data updated automatically",
+    "details": "Cron jobs status, system metrics refreshed",
+    "priority": "low",
+    "category": "infrastructure",
+    "tags": [
+      "automated",
+      "monitoring"
+    ],
+    "agent": "system"
+  },
+  {
+    "id": "1774812012706",
+    "timestamp": "2026-03-29T19:20:12.706Z",
+    "type": "system",
+    "title": "OS Data Refresh",
+    "summary": "Mission Control operational data updated automatically",
+    "details": "Cron jobs status, system metrics refreshed",
+    "priority": "low",
+    "category": "infrastructure",
+    "tags": [
+      "automated",
+      "monitoring"
+    ],
+    "agent": "system"
+  },
+  {
+    "id": "1774811407713",
+    "timestamp": "2026-03-29T19:10:07.713Z",
+    "type": "system",
+    "title": "OS Data Refresh",
+    "summary": "Mission Control operational data updated automatically",
+    "details": "Cron jobs status, system metrics refreshed",
+    "priority": "low",
+    "category": "infrastructure",
+    "tags": [
+      "automated",
+      "monitoring"
+    ],
+    "agent": "system"
+  },
+  {
+    "id": "1774810805417",
+    "timestamp": "2026-03-29T19:00:05.417Z",
+    "type": "system",
+    "title": "OS Data Refresh",
+    "summary": "Mission Control operational data updated automatically",
+    "details": "Cron jobs status, system metrics refreshed",
+    "priority": "low",
+    "category": "infrastructure",
+    "tags": [
+      "automated",
+      "monitoring"
+    ],
+    "agent": "system"
+  },
+  {
     "id": "1774810207149",
     "timestamp": "2026-03-29T18:50:07.149Z",
     "type": "system",
