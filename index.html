@@ -777,162 +777,40 @@ tr.clickable-row:hover td { background: rgba(74,222,128,0.05); }
 .action-btn.danger:hover { background: var(--red-dim); border-color: var(--red); }
 
 /* ═══════════════════════════════════
-   CHAT BUBBLE — Direct Kiwi Connection
+   MISSION STATEMENT BANNER
    ═══════════════════════════════════ */
-.chat-bubble {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 1500;
-}
-
-.chat-toggle {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--kiwi), #22c55e);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 20px rgba(74,222,128,0.3);
-  transition: all var(--transition);
+.mission-banner {
+  background: linear-gradient(135deg, rgba(74,222,128,0.08) 0%, rgba(34,211,238,0.05) 100%);
+  border: 1px solid rgba(74,222,128,0.15);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
   position: relative;
+  overflow: hidden;
 }
-
-.chat-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(74,222,128,0.4); }
-.chat-toggle.has-badge::after {
+.mission-banner::before {
   content: '';
   position: absolute;
-  top: 2px; right: 2px;
-  width: 12px; height: 12px;
-  background: var(--red);
-  border-radius: 50%;
-  border: 2px solid var(--bg-primary);
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: linear-gradient(180deg, var(--kiwi), var(--cyan));
+  border-radius: 4px 0 0 4px;
 }
-
-.chat-panel {
-  display: none;
-  position: absolute;
-  bottom: 68px;
-  right: 0;
-  width: 380px;
-  height: 500px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  flex-direction: column;
-}
-
-.chat-panel.open { display: flex; animation: modalSlide 0.2s ease; }
-
-.chat-header {
-  padding: 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg-tertiary);
-}
-
-.chat-header-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--kiwi), #22c55e);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
-
-.chat-header-info { flex: 1; }
-.chat-header-name { font-size: 14px; font-weight: 700; }
-.chat-header-status { font-size: 11px; color: var(--kiwi); display: flex; align-items: center; gap: 4px; }
-.chat-header-status::before { content: ''; width: 6px; height: 6px; background: var(--kiwi); border-radius: 50%; }
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.chat-msg {
-  max-width: 85%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.chat-msg.from-kiwi {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
-}
-
-.chat-msg.from-user {
-  background: var(--kiwi);
-  color: #000;
-  align-self: flex-end;
-  border-bottom-right-radius: 4px;
-}
-
-.chat-msg-time {
+.mission-label {
   font-size: 10px;
-  color: var(--text-tertiary);
-  margin-top: 4px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--kiwi);
+  margin-bottom: 8px;
 }
-
-.chat-msg.from-user .chat-msg-time { color: rgba(0,0,0,0.5); }
-
-.chat-input-area {
-  padding: 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-.chat-input {
-  flex: 1;
-  padding: 10px 14px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+.mission-text {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
   color: var(--text-primary);
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  resize: none;
-  max-height: 100px;
-  min-height: 40px;
-  line-height: 1.4;
+  letter-spacing: -0.01em;
 }
-
-.chat-input:focus { border-color: var(--kiwi); }
-.chat-input::placeholder { color: var(--text-tertiary); }
-
-.chat-send {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: var(--kiwi);
-  border: none;
-  color: #000;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  transition: all var(--transition);
-}
-
-.chat-send:hover { background: #5eead4; transform: scale(1.05); }
 
 /* ── COMMAND PALETTE ── */
 .cmd-palette {
@@ -1064,7 +942,7 @@ tr.clickable-row:hover td { background: rgba(74,222,128,0.05); }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .main-content { padding: 16px; }
   .org-level { flex-direction: column; align-items: center; }
-  .chat-panel { width: calc(100vw - 48px); right: -12px; }
+
 }
 
 @media (max-width: 1024px) {
@@ -1146,13 +1024,13 @@ tr.clickable-row:hover td { background: rgba(74,222,128,0.05); }
       </div>
     </nav>
 
-    <div class="sidebar-footer" onclick="toggleChat()">
+    <div class="sidebar-footer">
       <div class="avatar">🥝</div>
       <div class="user-info">
         <div class="user-name">Kiwi Klase</div>
         <div class="user-role">COO • Online</div>
       </div>
-      <span style="font-size:10px;color:var(--kiwi)">💬</span>
+      <span style="font-size:8px;width:8px;height:8px;background:var(--kiwi);border-radius:50%;display:inline-block"></span>
     </div>
   </aside>
 
@@ -1178,6 +1056,10 @@ tr.clickable-row:hover td { background: rgba(74,222,128,0.05); }
            PAGE: DASHBOARD
            ════════════════════════════════════════════ -->
       <div class="page active" id="page-dashboard">
+        <div class="mission-banner">
+          <div class="mission-label">🎯 Mission</div>
+          <div class="mission-text">Build an autonomous organization of AI agents that does work for me and produces value 24/7.</div>
+        </div>
         <div class="grid-4" style="margin-bottom:20px">
           <div class="card clickable" onclick="navigateTo('projects')">
             <div class="stat-label">Active Projects</div>
@@ -1255,7 +1137,7 @@ tr.clickable-row:hover td { background: rgba(74,222,128,0.05); }
             </div>
             <div class="quick-actions" style="flex-direction:column">
               <div class="quick-action" onclick="openModal('addTask')">➕ New Task</div>
-              <div class="quick-action" onclick="toggleChat()">💬 Message Kiwi</div>
+              <div class="quick-action" onclick="navigateTo('team')">👥 View Team</div>
               <div class="quick-action" onclick="navigateTo('operations')">🔄 View Agent Tasks</div>
               <div class="quick-action" onclick="navigateTo('research')">🔍 Latest Intel</div>
             </div>
@@ -2452,27 +2334,7 @@ item" data-tags="user alex core" onclick="openModal('kbDetail', {icon:'👤',tit
   </div>
 </div>
 
-<!-- Chat Bubble -->
-<div class="chat-bubble">
-  <div class="chat-panel" id="chatPanel">
-    <div class="chat-header">
-      <div class="chat-header-avatar">🥝</div>
-      <div class="chat-header-info">
-        <div class="chat-header-name">Kiwi Klase</div>
-        <div class="chat-header-status" id="chatStatus">Connecting…</div>
-      </div>
-      <button class="modal-close" onclick="toggleChat()">×</button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-      <div class="chat-msg from-kiwi" id="chatWelcome">Connecting to Kiwi…<div class="chat-msg-time">—</div></div>
-    </div>
-    <div class="chat-input-area">
-      <textarea class="chat-input" id="chatInput" placeholder="Message Kiwi..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
-      <button class="chat-send" onclick="sendChat()">→</button>
-    </div>
-  </div>
-  <button class="chat-toggle" onclick="toggleChat()" title="Chat with Kiwi">🥝</button>
-</div>
+<!-- Chat removed — communicate via Telegram -->
 
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
@@ -2705,7 +2567,7 @@ function openModal(type, data) {
       + (data.skills ? '<div style="margin-top:16px"><div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Skills</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+data.skills.map(function(s){return '<span class="badge muted">'+s+'</span>';}).join('')+'</div></div>' : '')
       + '</div>'
       + '<div class="modal-footer">'
-      + (data.type !== 'Human' ? '<button class="action-btn" onclick="sendChatMsg(\'Assign task to '+data.name+'\');closeModal();toggleChat()">💬 Assign via Kiwi</button>' : '')
+      + (data.type !== 'Human' ? '<button class="action-btn" onclick="showToast(\'Task queued for \'+\''+'\'+data.name,\'success\');closeModal()">📋 Queue Task</button>' : '')
       + '<button class="action-btn primary" onclick="closeModal()">Done</button></div>';
   }
   else if (type === 'projectDetail') {
@@ -2721,7 +2583,7 @@ function openModal(type, data) {
       + (data.remaining ? '<div class="modal-detail-row"><div class="modal-detail-label">Remaining</div><div class="modal-detail-value">'+data.remaining+'</div></div>' : '')
       + (data.streams ? '<div style="margin-top:16px"><div style="font-size:12px;font-weight:600;color:var(--text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Revenue Streams</div>'+data.streams.map(function(s){return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">'+s.name+'</span><span style="font-size:11px;color:var(--text-tertiary)">'+s.progress+'%</span></div><div class="progress-bar"><div class="progress-fill '+s.color+'" style="width:'+s.progress+'%"></div></div><div style="font-size:11px;color:var(--text-tertiary);margin-top:4px">'+s.notes+'</div></div>';}).join('')+'</div>' : '')
       + '</div>'
-      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Update on '+data.name+'\');closeModal();toggleChat()">💬 Ask Kiwi</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+      + '<div class="modal-footer"><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
   }
   else if (type === 'addTask') {
     html = '<div class="modal-header"><div class="modal-title">➕ New Task</div><button class="modal-close" onclick="closeModal()">×</button></div>'
@@ -2755,7 +2617,7 @@ function openModal(type, data) {
       + (data.niches ? '<div class="modal-detail-row"><div class="modal-detail-label">Niches</div><div class="modal-detail-value">'+data.niches+'</div></div>' : '')
       + (data.checklist ? '<div style="margin-top:16px">'+data.checklist.map(function(c){return '<div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03)">'+c+'</div>';}).join('')+'</div>' : '')
       + '</div>'
-      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Update on '+data.name+'\');closeModal();toggleChat()">💬 Ask Kiwi</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+      + '<div class="modal-footer"><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
   }
   else if (type === 'editSetting') {
     html = '<div class="modal-header"><div class="modal-title">✏️ Edit: '+data.label+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
@@ -2782,14 +2644,14 @@ function openModal(type, data) {
     html = '<div class="modal-header"><div class="modal-title">📰 '+data.source+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
       + '<div class="modal-body"><div style="font-size:16px;font-weight:700;margin-bottom:12px">'+data.headline+'</div>'
       + '<div style="font-size:13px;color:var(--text-tertiary);line-height:1.6">'+data.summary+'</div></div>'
-      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Research: '+data.headline+'\');closeModal();toggleChat()">🔍 Research More</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+      + '<div class="modal-footer"><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
   }
   else if (type === 'kbDetail') {
     html = '<div class="modal-header"><div class="modal-title">'+data.icon+' '+data.title+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
       + '<div class="modal-body"><div style="font-size:13px;color:var(--text-tertiary);margin-bottom:16px">'+data.desc+'</div>'
       + '<div class="modal-detail-row"><div class="modal-detail-label">Path</div><div class="modal-detail-value" style="color:var(--cyan)">'+data.path+'</div></div>'
-      + '<div style="margin-top:16px;padding:16px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;color:var(--text-tertiary)">📝 Tell Kiwi what changes to make via chat or Telegram.</div></div>'
-      + '<div class="modal-footer"><button class="action-btn" onclick="sendChatMsg(\'Show me '+data.path+'\');closeModal();toggleChat()">📖 View</button><button class="action-btn" onclick="sendChatMsg(\'Edit '+data.path+'\');closeModal();toggleChat()">✏️ Edit via Kiwi</button><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
+      + '<div style="margin-top:16px;padding:16px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;color:var(--text-tertiary)">📝 Message Kiwi on Telegram to make changes.</div></div>'
+      + '<div class="modal-footer"><button class="action-btn primary" onclick="closeModal()">Done</button></div>';
   }
   else if (type === 'cronDetail') {
     html = '<div class="modal-header"><div class="modal-title">⏰ '+data.name+'</div><button class="modal-close" onclick="closeModal()">×</button></div>'
@@ -2835,8 +2697,7 @@ var CMD_ITEMS = [
   { icon:'💰', label:'Finances', action:function(){navigateTo('finances')} },
   { icon:'📚', label:'Knowledge Base', action:function(){navigateTo('knowledge')} },
   { icon:'🔧', label:'Settings', action:function(){navigateTo('settings')} },
-  { icon:'➕', label:'New Task', hint:'Create a task', action:function(){closeCmdPalette();openModal('addTask')} },
-  { icon:'💬', label:'Message Kiwi', hint:'Open chat', action:function(){closeCmdPalette();toggleChat()} }
+  { icon:'➕', label:'New Task', hint:'Create a task', action:function(){closeCmdPalette();openModal('addTask')} }
 ];
 // Add agents to command palette
 Object.keys(AGENTS).forEach(function(key) {
@@ -2864,129 +2725,18 @@ function renderCommands(q) {
 }
 
 // ═══════════════════════════════════
-// CHAT SYSTEM
+// CHAT SYSTEM — Real Gateway Integration
 // ═══════════════════════════════════
-var chatOpen = false;
-// ═══════════════════════════════════
-// KIWI CHAT — Smart Gateway Integration
-// ═══════════════════════════════════
-// Strategy:
-// - On localhost/gateway (127.0.0.1:18789): embed gateway chat iframe
-// - On GitHub Pages or remote: show Telegram link + instructions
-// Simple approach that actually works.
-
-var IS_LOCAL = (function() {
-  var h = location.hostname;
-  return h === '127.0.0.1' || h === 'localhost' || h === '0.0.0.0' || location.port === '18789';
-})();
-
-var GATEWAY_BASE = 'http://127.0.0.1:18789';
-
-var GATEWAY_TOKEN = (function() {
-  var h = location.hash; var m = h.match(/token=([a-f0-9]+)/);
-  if (m) { localStorage.setItem('kiwi_gw_token', m[1]); return m[1]; }
-  return localStorage.getItem('kiwi_gw_token') || '';
-})();
-
-function kiwiSetStatus(text, color) {
-  var el = document.getElementById('chatStatus');
-  if (el) { el.textContent = text; el.style.color = color || 'var(--kiwi)'; }
-}
-
-function initChatPanel() {
-  var welcome = document.getElementById('chatWelcome');
-  var inputArea = document.querySelector('.chat-input-area');
-  var messagesArea = document.getElementById('chatMessages');
-
-  if (IS_LOCAL) {
-    kiwiSetStatus('Online — Local Gateway', 'var(--kiwi)');
-    var chatUrl = GATEWAY_BASE + '/#/chat';
-    if (GATEWAY_TOKEN) chatUrl = GATEWAY_BASE + '/#token=' + GATEWAY_TOKEN + '/chat';
-    
-    if (welcome) {
-      welcome.innerHTML = ''
-        + '<div style="text-align:center;padding:8px 0">'
-        + '<div style="font-size:32px;margin-bottom:8px">🥝</div>'
-        + '<div style="font-weight:600;margin-bottom:12px">Chat with Kiwi</div>'
-        + '</div>'
-        + '<div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">'
-        + '<strong style="color:var(--kiwi)">Connected to local gateway</strong><br>'
-        + 'Full bidirectional chat with Kiwi — streaming responses, real-time.'
-        + '</div>'
-        + '<div style="margin:12px 0"><a href="' + chatUrl + '" target="_blank" '
-        + 'style="display:block;padding:10px 16px;background:var(--kiwi);color:#000;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;font-size:13px">'
-        + '💬 Open Kiwi Chat</a></div>'
-        + '<div style="font-size:12px;color:var(--text-tertiary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px">'
-        + 'Opens the OpenClaw chat interface with full auth.<br>'
-        + 'Or message via <a href="https://t.me/KiwiKlaseBot" target="_blank" style="color:var(--kiwi)">Telegram</a>.'
-        + '</div>'
-        + '<div class="chat-msg-time" style="margin-top:8px">Gateway online at 127.0.0.1:18789</div>';
-    }
-  } else {
-    kiwiSetStatus('Remote — Use Telegram', 'var(--amber)');
-    if (welcome) {
-      welcome.innerHTML = ''
-        + '<div style="text-align:center;padding:8px 0">'
-        + '<div style="font-size:32px;margin-bottom:8px">🥝</div>'
-        + '<div style="font-weight:600;margin-bottom:12px">Chat with Kiwi</div>'
-        + '</div>'
-        + '<div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">'
-        + '<strong style="color:var(--kiwi)">📱 Telegram (fastest):</strong><br>'
-        + 'Message Kiwi directly — all commands route there in real-time.'
-        + '</div>'
-        + '<div style="margin:12px 0"><a href="https://t.me/KiwiKlaseBot" target="_blank" '
-        + 'style="display:block;padding:10px 16px;background:var(--kiwi);color:#000;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;font-size:13px">'
-        + '💬 Open Telegram Chat</a></div>'
-        + '<div style="font-size:12px;color:var(--text-tertiary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px">'
-        + '<strong>🖥️ Live chat:</strong> Open from Mac mini for embedded chat:<br>'
-        + '<code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:3px;font-size:11px">http://127.0.0.1:18789</code>'
-        + '</div>'
-        + '<div class="chat-msg-time" style="margin-top:8px">Kiwi is always online via Telegram</div>';
-    }
-  }
-}
-
-function toggleChat() {
-  chatOpen = !chatOpen;
-  document.getElementById('chatPanel').classList.toggle('open', chatOpen);
-  if (chatOpen) {
-    var input = document.getElementById('chatInput');
-    if (input && input.offsetParent) input.focus();
-  }
-}
-
-function sendChat() {
-  if (IS_LOCAL) return;
-  var input = document.getElementById('chatInput');
-  var msg = input.value.trim();
-  if (!msg) return;
-  var encoded = encodeURIComponent(msg);
-  window.open('https://t.me/KiwiKlaseBot?text=' + encoded, '_blank');
-  addChatMsg(msg, 'from-user');
-  addChatMsg('📱 Opened in Telegram — Kiwi will respond there.', 'from-kiwi');
-  input.value = '';
-}
-
-function sendChatMsg(msg) {
-  if (IS_LOCAL) { if (!chatOpen) toggleChat(); return; }
-  document.getElementById('chatInput').value = msg;
-  if (!chatOpen) toggleChat();
-}
-
-function addChatMsg(text, cls) {
-  var container = document.getElementById('chatMessages');
-  if (!container) return;
-  var time = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
-  var div = document.createElement('div');
-  div.className = 'chat-msg ' + cls;
-  var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-  div.innerHTML = safe + '<div class="chat-msg-time">' + time + '</div>';
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-setTimeout(initChatPanel, 300);
-
+// Architecture:
+// - Local (127.0.0.1/localhost): Embeds OpenClaw gateway chat via iframe
+//   Full bidirectional real-time chat with Kiwi, streaming responses, tools visible
+// - Remote (GitHub Pages etc): Gateway is loopback-only — shows clear notice
+//   NO Telegram redirects, NO external app integration
+// Chat removed — communicate via Telegram
+// Stub functions for any remaining references
+function toggleChat() {}
+function sendChat() {}
+function sendChatMsg() {}
 
 // ═══════════════════════════════════
 // TOAST NOTIFICATIONS
@@ -3009,7 +2759,7 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     if (document.getElementById('cmdPalette').classList.contains('show')) { closeCmdPalette(); return; }
     if (document.getElementById('modalOverlay').classList.contains('show')) { closeModal(); return; }
-    if (chatOpen) { toggleChat(); return; }
+
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openCmdPalette(); return; }
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
