@@ -2900,21 +2900,28 @@ function initChatPanel() {
 
   if (IS_LOCAL) {
     kiwiSetStatus('Online — Local Gateway', 'var(--kiwi)');
-    var iframeSrc = GATEWAY_BASE + '/#/chat';
-    if (GATEWAY_TOKEN) iframeSrc = GATEWAY_BASE + '/#token=' + GATEWAY_TOKEN + '/chat';
+    var chatUrl = GATEWAY_BASE + '/#/chat';
+    if (GATEWAY_TOKEN) chatUrl = GATEWAY_BASE + '/#token=' + GATEWAY_TOKEN + '/chat';
     
-    messagesArea.innerHTML = '';
-    messagesArea.style.padding = '0';
-    messagesArea.style.display = 'flex';
-    messagesArea.style.flexDirection = 'column';
-    
-    var iframe = document.createElement('iframe');
-    iframe.src = iframeSrc;
-    iframe.style.cssText = 'flex:1;border:none;width:100%;height:100%;border-radius:0;background:var(--bg-primary);';
-    iframe.allow = 'clipboard-write';
-    iframe.id = 'kiwiChatFrame';
-    messagesArea.appendChild(iframe);
-    if (inputArea) inputArea.style.display = 'none';
+    if (welcome) {
+      welcome.innerHTML = ''
+        + '<div style="text-align:center;padding:8px 0">'
+        + '<div style="font-size:32px;margin-bottom:8px">🥝</div>'
+        + '<div style="font-weight:600;margin-bottom:12px">Chat with Kiwi</div>'
+        + '</div>'
+        + '<div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">'
+        + '<strong style="color:var(--kiwi)">Connected to local gateway</strong><br>'
+        + 'Full bidirectional chat with Kiwi — streaming responses, real-time.'
+        + '</div>'
+        + '<div style="margin:12px 0"><a href="' + chatUrl + '" target="_blank" '
+        + 'style="display:block;padding:10px 16px;background:var(--kiwi);color:#000;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;font-size:13px">'
+        + '💬 Open Kiwi Chat</a></div>'
+        + '<div style="font-size:12px;color:var(--text-tertiary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px">'
+        + 'Opens the OpenClaw chat interface with full auth.<br>'
+        + 'Or message via <a href="https://t.me/KiwiKlaseBot" target="_blank" style="color:var(--kiwi)">Telegram</a>.'
+        + '</div>'
+        + '<div class="chat-msg-time" style="margin-top:8px">Gateway online at 127.0.0.1:18789</div>';
+    }
   } else {
     kiwiSetStatus('Remote — Use Telegram', 'var(--amber)');
     if (welcome) {
