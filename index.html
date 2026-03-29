@@ -2876,12 +2876,13 @@ function kiwiConnect() {
     // Authenticate with the Gateway using its connect RPC
     kiwiRpc('connect', {
       minProtocol: 3, maxProtocol: 3,
-      client: { platform: 'web', mode: 'webchat', instanceId: 'mission-control-chat' },
-      role: 'owner',
-      scopes: ['chat', 'sessions', 'channels'],
+      client: { id: 'webchat', version: '1.0.0', platform: 'web', mode: 'webchat', instanceId: 'mc-' + Date.now().toString(36) },
+      role: 'operator',
+      scopes: ['operator.admin','operator.read','operator.write'],
       auth: { token: GATEWAY_TOKEN },
       caps: ['tool-events'],
-      userAgent: 'MissionControl/1.0'
+      userAgent: 'MissionControl/1.0',
+      locale: navigator.language || 'en-US'
     }).then(function(hello) {
       kiwiWsConnected = true;
       kiwiReconnectDelay = 2000;
