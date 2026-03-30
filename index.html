@@ -3180,9 +3180,18 @@ async function loadActivityFeed() {
     var res = await fetch('./feed.json?' + Date.now());
     if (!res.ok) throw new Error('Feed not available');
     var data = await res.json();
-    FEED_CACHE = data;
-    renderActivityFeed(data.slice(0, 8));
-    renderNotifications(data.slice(0, 15));
+    
+    // Filter out OS Data Refresh entries to reduce noise
+    var filteredData = data.filter(function(item) {
+      return !(item.title && item.title.includes('OS Data Refresh')) &&
+             !(item.summary && item.summary.includes('OS Data Refresh')) &&
+             !(item.name && item.name.includes('OS Data Refresh')) &&
+             !(item.message && item.message.includes('OS Data Refresh'));
+    });
+    
+    FEED_CACHE = filteredData;
+    renderActivityFeed(filteredData.slice(0, 8));
+    renderNotifications(filteredData.slice(0, 15));
   } catch(e) {
     // Fallback to static activity
     renderStaticActivity();
